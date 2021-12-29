@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class DuenioService(private val repoDuenio: RepoDuenio) {
 
-    fun findAll() {
-        repoDuenio.findAll().toList()
+    fun findAll(): List<Duenio> {
+        return repoDuenio.findAll().toList()
     }
 
     fun findById(duenioId: Long): Duenio {
@@ -17,9 +17,9 @@ class DuenioService(private val repoDuenio: RepoDuenio) {
             .orElseThrow { throw NotFoundException("No se encontró el duenio indicado: $duenioId") }
     }
 
-    fun validarYGuardar(duenio: Duenio) {
+    fun validarYGuardar(duenio: Duenio): Duenio {
         duenio.validar()
-        repoDuenio.save(duenio)
+        return repoDuenio.save(duenio)
     }
 
     @Transactional
