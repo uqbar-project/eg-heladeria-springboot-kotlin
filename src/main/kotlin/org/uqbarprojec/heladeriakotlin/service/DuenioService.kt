@@ -1,9 +1,8 @@
 package org.uqbarprojec.heladeriakotlin.service
 
+import org.springframework.stereotype.Service
 import org.uqbarprojec.heladeriakotlin.dao.RepoDuenio
 import org.uqbarprojec.heladeriakotlin.model.Duenio
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class DuenioService(private val repoDuenio: RepoDuenio) {
@@ -20,10 +19,5 @@ class DuenioService(private val repoDuenio: RepoDuenio) {
     fun validarYGuardar(duenio: Duenio): Duenio {
         duenio.validar()
         return repoDuenio.save(duenio)
-    }
-
-    @Transactional
-    fun delete(nombreCompleto: String) {
-        repoDuenio.deleteByNombreCompleto(nombreCompleto)
     }
 }
