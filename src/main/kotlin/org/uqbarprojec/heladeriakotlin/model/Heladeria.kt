@@ -24,7 +24,7 @@ class Heladeria(
     var gustos: MutableMap<String, Int> = mutableMapOf()
 
     fun validar() {
-        if (nombre.trim().isEmpty()) {
+        if (nombre.isBlank()) {
             throw UserException("Debe cargar el nombre")
         }
         validarGustos(gustos)
@@ -36,7 +36,7 @@ class Heladeria(
     }
 
     fun agregarGusto(gusto: String, dificultad: Int) {
-        var gustoNormalizado = Normalizer.normalize(gusto.lowercase(), Normalizer.Form.NFD).replace("\\p{M}", "");
+        val gustoNormalizado = Normalizer.normalize(gusto.lowercase(), Normalizer.Form.NFD).replace("\\p{M}", "")
         gustos[gustoNormalizado] = dificultad
     }
 
