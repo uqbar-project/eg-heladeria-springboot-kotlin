@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 
 @Entity
-class Duenio(private val nombreCompleto: String) {
+class Duenio(val nombreCompleto: String) {
     @Id
     @GeneratedValue
     val id: Long = 0
