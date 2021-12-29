@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class HeladeriaService(private val repoHeladeria: RepoHeladeria, private val duenioService: DuenioService) {
 
-    fun findAll() {
-        repoHeladeria.findAll().toList()
+    fun findAll(): List<Heladeria> {
+        return repoHeladeria.findAll().toList()
     }
 
     fun findByNombre(nombre: String): List<Heladeria> {
@@ -27,25 +27,25 @@ class HeladeriaService(private val repoHeladeria: RepoHeladeria, private val due
     }
 
     @Transactional
-    fun actualizar(heladeriaId: Long, heladeria: Heladeria) {
+    fun actualizar(heladeriaId: Long, heladeria: Heladeria): Heladeria {
         val heladeriaFound: Heladeria = findById(heladeriaId)
         heladeria.duenio = duenioService.findById(heladeria.duenio.id)
         heladeriaFound.merge(heladeria)
-        validarYGuardar(heladeriaFound)
+        return validarYGuardar(heladeriaFound)
     }
 
     @Transactional
-    fun agregarGustos(heladeriaId: Long, gustos: MutableMap<String, Int>) {
+    fun agregarGustos(heladeriaId: Long, gustos: MutableMap<String, Int>): Heladeria {
         val heladeria: Heladeria = findById(heladeriaId)
         heladeria.agregarGustos(gustos)
-        validarYGuardar(heladeria)
+        return validarYGuardar(heladeria)
     }
 
     @Transactional
-    fun eliminarGustos(heladeriaId: Long, gustos: MutableMap<String, Int>) {
+    fun eliminarGustos(heladeriaId: Long, gustos: MutableMap<String, Int>): Heladeria {
         val heladeria: Heladeria = findById(heladeriaId)
         gustos.forEach { (gusto, _) -> heladeria.eliminarGusto(gusto) }
-        validarYGuardar(heladeria)
+        return validarYGuardar(heladeria)
     }
 
 
