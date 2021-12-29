@@ -5,7 +5,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://root:root@localhost:3306/heladeria
+    url: jdbc:mysql://root:1234@localhost:3306/heladeria?createDatabaseIfNotExist=true
   jpa:
     hibernate:
       ddl-auto: create-drop
