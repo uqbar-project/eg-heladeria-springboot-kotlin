@@ -10,6 +10,11 @@ import org.uqbarprojec.heladeriakotlin.service.HeladeriaService
 @CrossOrigin
 @RestController
 class HeladeriaController(private val heladeriaService: HeladeriaService, private val duenioService: DuenioService) {
+    @GetMapping("/heladerias/buscar")
+    fun getHeladeria(): List<HeladeriaDTO> {
+        return heladeriaService.findAll().map { HeladeriaDTO.fromHeladeria(it) }
+    }
+
     @GetMapping("/heladerias/buscar/{text}")
     fun getHeladeria(@PathVariable text: String): List<HeladeriaDTO> {
         return heladeriaService.findByNombre(text).map { HeladeriaDTO.fromHeladeria(it) }
