@@ -13,7 +13,7 @@ class HeladeriaService(private val repoHeladeria: RepoHeladeria, private val due
     }
 
     fun findByNombre(nombre: String): List<Heladeria> {
-        return repoHeladeria.findByNombreContaining(nombre)
+        return repoHeladeria.findByNombreContainingIgnoreCase(nombre)
     }
 
     fun findById(heladeriaId: Long): Heladeria {

@@ -10,7 +10,7 @@ import java.util.*
 interface RepoHeladeria : CrudRepository<Heladeria, Long> {
 
     @EntityGraph(attributePaths = ["duenio"])
-    fun findByNombreContaining(text: String): List<Heladeria>
+    fun findByNombreContainingIgnoreCase(text: String): List<Heladeria>
 
     @EntityGraph(attributePaths = ["duenio", "gustos"])
     override fun findById(id: Long): Optional<Heladeria>
