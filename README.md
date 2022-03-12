@@ -1,7 +1,7 @@
 
 # Ejemplo Heladería
 
-[![build](https://github.com/uqbar-project/eg-heladeria-springboot-kotlin/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/uqbar-project/eg-heladeria-springboot-kotlin/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-heladeria-springboot-kotlin/branch/master/graph/badge.svg)](https://codecov.io/gh/uqbar-project/eg-heladeria-springboot-kotlin)
+[![build](https://github.com/uqbar-project/eg-heladeria-springboot-kotlin/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-heladeria-springboot-kotlin/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-heladeria-springboot-kotlin/branch/master/graph/badge.svg?token=xQ8TFzLbHV)](https://codecov.io/gh/uqbar-project/eg-heladeria-springboot-kotlin)
 
 Este ejemplo está implementado con Kotlin y Spring Boot, se recomienda acompañarlo con el frontend desarrollado en [Svelte](https://github.com/uqbar-project/eg-heladeria-svelte).
 
