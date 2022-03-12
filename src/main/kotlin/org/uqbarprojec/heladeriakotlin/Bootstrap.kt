@@ -1,16 +1,14 @@
 package org.uqbarprojec.heladeriakotlin
 
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.stereotype.Component
 import org.uqbarprojec.heladeriakotlin.dao.RepoHeladeria
 import org.uqbarprojec.heladeriakotlin.model.Duenio
 import org.uqbarprojec.heladeriakotlin.model.Heladeria
 import org.uqbarprojec.heladeriakotlin.model.TipoHeladeria
-import org.uqbarprojec.heladeriakotlin.service.HeladeriaService
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.stereotype.Component
 
 @Component
 class Bootstrap(
-    private val heladeriaService: HeladeriaService,
     private val repoHeladeria: RepoHeladeria
 ) : InitializingBean {
 
@@ -45,8 +43,6 @@ class Bootstrap(
             Duenio("Manuela Fritzler y Carlos Gorriti"),
         )
         frigor.gustos = mutableMapOf("crema americana" to 2)
-
-
 
         crearOActualizarHeladeria(tucan)
         crearOActualizarHeladeria(monteOlivia)
