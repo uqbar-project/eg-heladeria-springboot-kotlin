@@ -48,13 +48,13 @@ class HeladeriaController(private val heladeriaService: HeladeriaService, privat
     }
 
     @PostMapping("/heladerias/{heladeriaId}/gustos")
-    @Operation(summary = "Agrega un gusto nuevo y lo asocia a una heladería")
+    @Operation(summary = "Agrega uno o más gustos nuevos y los asocia a una heladería")
     fun agregarGustos(@RequestBody gustos: MutableMap<String, Int>, @PathVariable heladeriaId: Long): Heladeria {
         return heladeriaService.agregarGustos(heladeriaId, gustos)
     }
 
     @DeleteMapping("/heladerias/{heladeriaId}/gustos")
-    @Operation(summary = "Elimina una heladería")
+    @Operation(summary = "Elimina uno o más gustos de una heladería")
     fun eliminarGustos(@RequestBody gustos: MutableMap<String, Int>, @PathVariable heladeriaId: Long): Heladeria {
         return heladeriaService.eliminarGustos(heladeriaId, gustos)
     }
