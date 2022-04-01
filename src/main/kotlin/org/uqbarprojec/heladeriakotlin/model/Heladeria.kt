@@ -11,7 +11,7 @@ class Heladeria(
     var nombre: String,
     @Enumerated(EnumType.ORDINAL)
     var tipoHeladeria: TipoHeladeria,
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne
     var duenio: Duenio,
 ) {
 
@@ -72,11 +72,6 @@ class Heladeria(
         gustos.remove(gusto)
     }
 
-    fun merge(otraHeladeria: Heladeria) {
-        nombre = otraHeladeria.nombre
-        tipoHeladeria = otraHeladeria.tipoHeladeria
-        duenio = otraHeladeria.duenio
-    }
 }
 
 enum class TipoHeladeria {

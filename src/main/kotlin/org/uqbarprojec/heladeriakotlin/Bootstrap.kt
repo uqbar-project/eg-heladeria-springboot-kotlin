@@ -2,6 +2,7 @@ package org.uqbarprojec.heladeriakotlin
 
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
+import org.uqbarprojec.heladeriakotlin.dao.RepoDuenio
 import org.uqbarprojec.heladeriakotlin.dao.RepoHeladeria
 import org.uqbarprojec.heladeriakotlin.model.Duenio
 import org.uqbarprojec.heladeriakotlin.model.Heladeria
@@ -9,12 +10,26 @@ import org.uqbarprojec.heladeriakotlin.model.TipoHeladeria
 
 @Component
 class Bootstrap(
-    private val repoHeladeria: RepoHeladeria
+    private val repoHeladeria: RepoHeladeria,
+    private val repoDuenio: RepoDuenio
 ) : InitializingBean {
+
+    val carlosMartinelli = Duenio("Carlos Martinelli")
+    val oliviaHeladette = Duenio("Olivia Heladette")
+    val manuelaFritzler = Duenio("Manuela Fritzler y Carlos Gorriti")
 
     override fun afterPropertiesSet() {
         if (repoHeladeria.count() < 3) {
+            initDuenios()
             initHeladerias()
+        }
+    }
+
+    fun initDuenios() {
+        repoDuenio.run {
+            save(carlosMartinelli)
+            save(oliviaHeladette)
+            save(manuelaFritzler)
         }
     }
 
@@ -22,16 +37,16 @@ class Bootstrap(
         val tucan = Heladeria(
             "Tucán",
             TipoHeladeria.ECONOMICA,
-            Duenio("Carlos Martinelli"),
+            carlosMartinelli,
         )
         tucan.gustos = mutableMapOf("frutilla" to 3, "maracuya" to 2, "dulce de leche" to 4, "pistacchio" to 6)
 
         val monteOlivia = Heladeria(
             "Monte Olivia",
             TipoHeladeria.ARTESANAL,
-            Duenio("Olivia Heladette"),
+            oliviaHeladette
 
-            )
+        )
         monteOlivia.gustos = mutableMapOf(
             "chocolate amargo" to 8, "dulce de leche" to 3, "mousse de limón" to 5, "crema tramontana" to 9,
             "vainilla" to 1
@@ -40,7 +55,7 @@ class Bootstrap(
         val frigor = Heladeria(
             "Frigor",
             TipoHeladeria.INDUSTRIAL,
-            Duenio("Manuela Fritzler y Carlos Gorriti"),
+            manuelaFritzler,
         )
         frigor.gustos = mutableMapOf("crema americana" to 2)
 

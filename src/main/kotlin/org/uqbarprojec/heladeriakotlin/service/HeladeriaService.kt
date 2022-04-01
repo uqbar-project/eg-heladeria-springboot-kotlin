@@ -1,9 +1,9 @@
 package org.uqbarprojec.heladeriakotlin.service
 
-import org.uqbarprojec.heladeriakotlin.dao.RepoHeladeria
-import org.uqbarprojec.heladeriakotlin.model.Heladeria
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import org.uqbarprojec.heladeriakotlin.dao.RepoHeladeria
+import org.uqbarprojec.heladeriakotlin.dto.ActualizarHeladeriaDTO
+import org.uqbarprojec.heladeriakotlin.model.Heladeria
 
 @Service
 class HeladeriaService(private val repoHeladeria: RepoHeladeria, private val duenioService: DuenioService) {
@@ -26,22 +26,21 @@ class HeladeriaService(private val repoHeladeria: RepoHeladeria, private val due
         return repoHeladeria.save(heladeria)
     }
 
-    @Transactional
-    fun actualizar(heladeriaId: Long, heladeria: Heladeria): Heladeria {
+    fun actualizar(heladeriaId: Long, heladeriaRequest: ActualizarHeladeriaDTO): Heladeria {
         val heladeriaFound: Heladeria = findById(heladeriaId)
-        heladeria.duenio = duenioService.findById(heladeria.duenio.id)
-        heladeriaFound.merge(heladeria)
+        if (heladeriaRequest.duenio?.id != null) {
+            heladeriaFound.duenio = duenioService.findById(heladeriaRequest.duenio.id)
+        }
+        heladeriaRequest.aplicarCambiosA(heladeriaFound)
         return validarYGuardar(heladeriaFound)
     }
 
-    @Transactional
     fun agregarGustos(heladeriaId: Long, gustos: MutableMap<String, Int>): Heladeria {
         val heladeria: Heladeria = findById(heladeriaId)
         heladeria.agregarGustos(gustos)
         return validarYGuardar(heladeria)
     }
 
-    @Transactional
     fun eliminarGustos(heladeriaId: Long, gustos: MutableMap<String, Int>): Heladeria {
         val heladeria: Heladeria = findById(heladeriaId)
         gustos.forEach { (gusto, _) -> heladeria.eliminarGusto(gusto) }

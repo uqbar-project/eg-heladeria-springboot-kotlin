@@ -2,9 +2,10 @@ package org.uqbarprojec.heladeriakotlin.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.*
+import org.uqbarprojec.heladeriakotlin.dto.ActualizarHeladeriaDTO
 import org.uqbarprojec.heladeriakotlin.model.Duenio
 import org.uqbarprojec.heladeriakotlin.model.Heladeria
-import org.uqbarprojec.heladeriakotlin.model.HeladeriaDTO
+import org.uqbarprojec.heladeriakotlin.dto.HeladeriaDTO
 import org.uqbarprojec.heladeriakotlin.service.DuenioService
 import org.uqbarprojec.heladeriakotlin.service.HeladeriaService
 
@@ -43,7 +44,10 @@ class HeladeriaController(private val heladeriaService: HeladeriaService, privat
 
     @PatchMapping("/heladerias/{heladeriaId}")
     @Operation(summary = "Actualiza la información de una heladería")
-    fun actualizarHeladeria(@RequestBody heladeria: Heladeria, @PathVariable heladeriaId: Long): Heladeria {
+    fun actualizarHeladeria(
+        @RequestBody heladeria: ActualizarHeladeriaDTO,
+        @PathVariable heladeriaId: Long
+    ): Heladeria {
         return heladeriaService.actualizar(heladeriaId, heladeria)
     }
 
