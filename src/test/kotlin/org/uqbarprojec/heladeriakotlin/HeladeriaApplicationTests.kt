@@ -212,5 +212,18 @@ class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
             .andExpect(status().isBadRequest)
     }
 
+    @Test
+    fun `No se puede crear un gusto con nombre vacio`() {
+        val body = mapOf("" to "7").toJSON()
+
+        mockMvc
+            .perform(
+                post("/heladerias/{heladeriaId}/gustos", "1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
+            )
+            .andExpect(status().isBadRequest)
+    }
+
 
 }
