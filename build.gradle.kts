@@ -28,6 +28,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("mysql:mysql-connector-java:8.0.28")
     implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
+    implementation("com.google.code.gson:gson:2.9.0")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$springVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion")
     testImplementation("com.h2database:h2:2.1.210")

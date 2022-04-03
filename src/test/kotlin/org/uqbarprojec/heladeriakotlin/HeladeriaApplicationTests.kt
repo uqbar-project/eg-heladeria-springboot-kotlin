@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.uqbarprojec.heladeriakotlin.utils.toJSON
+import org.uqbarprojec.heladeriakotlin.utils.toJson
 import javax.transaction.Transactional
 
 @SpringBootTest
@@ -114,6 +115,26 @@ class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.nombre").value("nuevoNombre"))
+    }
+
+    @Test
+    @Transactional
+    fun `Actualizar el duenio de una heladeria`() {
+        val body = object {
+            val duenio = object {
+                val id = 1
+            }
+        }.toJson()
+
+        mockMvc
+            .perform(
+                patch("/heladerias/{heladeriaId}/", "1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
+            )
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.duenio.nombreCompleto").value("Carlos Martinelli"))
     }
 
     @Test
