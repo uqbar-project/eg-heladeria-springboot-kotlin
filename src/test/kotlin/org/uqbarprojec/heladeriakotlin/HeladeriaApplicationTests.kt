@@ -159,8 +159,21 @@ class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    fun `Agregar un gusto con dificultad invalida devuelve bad request`() {
-        val body = mapOf("nuevo" to "20").toJSON()
+    fun `Agregar un gusto con dificultad mayor a 10 devuelve bad request`() {
+        val body = mapOf("nuevo" to "11").toJSON()
+
+        mockMvc
+            .perform(
+                post("/heladerias/{heladeriaId}/gustos", "1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
+            )
+            .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `Agregar un gusto con dificultad menor a 1 devuelve bad request`() {
+        val body = mapOf("nuevo" to "0").toJSON()
 
         mockMvc
             .perform(
