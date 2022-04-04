@@ -1,7 +1,5 @@
 package org.uqbarprojec.heladeriakotlin.model
 
-import org.hibernate.annotations.GenericGenerator
-import org.hibernate.annotations.Parameter
 import org.uqbarprojec.heladeriakotlin.service.UserException
 import java.text.Normalizer
 import javax.persistence.*
@@ -16,14 +14,7 @@ class Heladeria(
 ) {
 
     @Id
-    @GeneratedValue(generator = "sequence-generator")
-    @GenericGenerator(
-        name = "sequence-generator",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = [Parameter(name = "sequence_name", value = "heladeria_sequence"),
-            Parameter(name = "initial_value", value = "1"),
-            Parameter(name = "increment_size", value = "1")]
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
     @ElementCollection
