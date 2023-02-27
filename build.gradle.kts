@@ -1,43 +1,60 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "2.6.4"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    war
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
-    kotlin("plugin.jpa") version "1.6.10"
+    id("org.springframework.boot") version "3.0.2"
+    id("io.spring.dependency-management") version "1.1.0"
+    kotlin("jvm") version "1.8.10"
+    kotlin("plugin.spring") version "1.8.10"
+    kotlin("plugin.jpa") version "1.8.10"
     jacoco
 }
 
-group = "org.uqbar-project"
-version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_11
+extra["springCloudVersion"] = "2022.0.0"
 
-val springVersion = "2.6.4"
+group = "org.uqbar"
+version = "0.0.1-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc:$springVersion")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springVersion")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
+    // básicos de cualquier proyecto Spring Boot
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-hateoas")
+    implementation("org.springframework.boot:spring-boot-starter-data-rest")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("mysql:mysql-connector-java:8.0.28")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
-    implementation("com.google.code.gson:gson:2.9.0")
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:$springVersion")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:$springVersion")
-    testImplementation("com.h2database:h2:2.1.210")
+    implementation("org.springframework.boot:spring-boot-starter-web-services")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
+    implementation("org.springframework.boot:spring-boot-devtools")
+
+    // conexión a la base de datosa
+    implementation("org.postgresql:postgresql:42.5.3")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+    // testing
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.h2database:h2:2.1.214")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "14"
+        jvmTarget = "17"
     }
 }
 
@@ -54,7 +71,7 @@ tasks.jacocoTestReport {
 }
 
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.8"
 }
 
 tasks.jacocoTestReport {

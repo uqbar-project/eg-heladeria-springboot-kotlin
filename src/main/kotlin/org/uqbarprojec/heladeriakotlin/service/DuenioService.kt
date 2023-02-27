@@ -1,11 +1,15 @@
 package org.uqbarprojec.heladeriakotlin.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.uqbarprojec.heladeriakotlin.dao.RepoDuenio
 import org.uqbarprojec.heladeriakotlin.model.Duenio
 
 @Service
-class DuenioService(private val repoDuenio: RepoDuenio) {
+class DuenioService {
+
+    @Autowired
+    lateinit var repoDuenio: RepoDuenio
 
     fun findAll(): List<Duenio> {
         return repoDuenio.findAll().toList()
