@@ -17,7 +17,8 @@ class Heladeria(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
-    @ElementCollection
+    // TODO: quitar el fetch eager y hacerlo lazy
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "gusto")
     @Column(name = "dificultad")
     @CollectionTable(name = "heladeria_gustos", joinColumns = [JoinColumn(name = "heladeria_id")])
