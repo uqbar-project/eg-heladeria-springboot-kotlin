@@ -5,11 +5,15 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost/heladeria?createDatabaseIfNotExist=true
-    username: root
-    password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://0.0.0.0:5432/heladeria?createDatabaseIfNotExist=true
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: create-drop
     open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true

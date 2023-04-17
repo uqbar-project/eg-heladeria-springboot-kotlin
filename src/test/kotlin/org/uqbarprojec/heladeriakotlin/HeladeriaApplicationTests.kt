@@ -1,5 +1,6 @@
 package org.uqbarprojec.heladeriakotlin
 
+import jakarta.transaction.Transactional
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,18 +12,20 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.uqbarprojec.heladeriakotlin.utils.toJSON
-import javax.transaction.Transactional
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisplayName("Dado un controlador")
-class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
+class HeladeriaApplicationTests {
+
+    @Autowired
+    lateinit var mockMvc: MockMvc
 
     @Test
     fun `Buscar una heladeria indicando parte del nombre`() {
         mockMvc
-            .perform(get("/heladerias/buscar/tu"))
+            .perform(get("/heladerias/buscar").param("nombre", "tuc"))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$[0].nombre").value("Tucán"))
@@ -40,7 +43,7 @@ class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
     @Test
     fun `Buscar una heladeria por nombre no encuentra ninguna que coincida`() {
         mockMvc
-            .perform(get("/heladerias/buscar/{nombre}", "inexistente"))
+            .perform(get("/heladerias/buscar").param("nombre", "inexistente"))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.length()").value(0))
@@ -107,7 +110,7 @@ class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
 
         mockMvc
             .perform(
-                patch("/heladerias/{heladeriaId}/", "1")
+                patch("/heladerias/{heladeriaId}", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(body)
             )
@@ -127,7 +130,7 @@ class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
 
         mockMvc
             .perform(
-                patch("/heladerias/{heladeriaId}/", "1")
+                patch("/heladerias/{heladeriaId}", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(body)
             )
@@ -143,7 +146,7 @@ class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
 
         mockMvc
             .perform(
-                patch("/heladerias/{heladeriaId}/", "1")
+                patch("/heladerias/{heladeriaId}", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(body)
             )
@@ -158,7 +161,7 @@ class HeladeriaApplicationTests(@Autowired val mockMvc: MockMvc) {
 
         mockMvc
             .perform(
-                patch("/heladerias/{heladeriaId}/", "1")
+                patch("/heladerias/{heladeriaId}", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(body)
             )

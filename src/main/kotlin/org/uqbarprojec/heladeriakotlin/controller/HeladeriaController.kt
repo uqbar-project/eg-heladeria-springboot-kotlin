@@ -1,27 +1,31 @@
 package org.uqbarprojec.heladeriakotlin.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.uqbarprojec.heladeriakotlin.dto.ActualizarHeladeriaDTO
+import org.uqbarprojec.heladeriakotlin.dto.HeladeriaDTO
 import org.uqbarprojec.heladeriakotlin.model.Duenio
 import org.uqbarprojec.heladeriakotlin.model.Heladeria
-import org.uqbarprojec.heladeriakotlin.dto.HeladeriaDTO
 import org.uqbarprojec.heladeriakotlin.service.DuenioService
 import org.uqbarprojec.heladeriakotlin.service.HeladeriaService
+import java.util.*
 
-@CrossOrigin
+@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RestController
-class HeladeriaController(private val heladeriaService: HeladeriaService, private val duenioService: DuenioService) {
-    @GetMapping("/heladerias/buscar")
-    @Operation(summary = "Devuelve la lista de todas las heladerías")
-    fun getHeladerias(): List<HeladeriaDTO> {
-        return heladeriaService.findAll().map { HeladeriaDTO.fromHeladeria(it) }
-    }
+class HeladeriaController {
 
-    @GetMapping("/heladerias/buscar/{text}")
+    @Autowired
+    lateinit var heladeriaService: HeladeriaService
+
+    @Autowired
+    lateinit var duenioService: DuenioService
+
+    @GetMapping("/heladerias/buscar")
     @Operation(summary = "Devuelve la información de heladerías buscando un nombre que contenga el valor (sin distinguir mayúsculas de minúsculas)")
-    fun getHeladeria(@PathVariable text: String): List<HeladeriaDTO> {
-        return heladeriaService.findByNombre(text).map { HeladeriaDTO.fromHeladeria(it) }
+    fun getHeladerias(@RequestParam(required = false) nombre: String?): List<HeladeriaDTO> {
+        if (nombre === null) return heladeriaService.findAll().map { HeladeriaDTO.fromHeladeria(it) }
+        return heladeriaService.findByNombre(nombre).map { HeladeriaDTO.fromHeladeria(it) }
     }
 
     @GetMapping("/heladerias/id/{id}")

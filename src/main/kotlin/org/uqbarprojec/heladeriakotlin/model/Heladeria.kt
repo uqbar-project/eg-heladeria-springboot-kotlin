@@ -1,15 +1,15 @@
 package org.uqbarprojec.heladeriakotlin.model
 
+import jakarta.persistence.*
 import org.uqbarprojec.heladeriakotlin.service.UserException
 import java.text.Normalizer
-import javax.persistence.*
 
 @Entity
 class Heladeria(
     var nombre: String,
     @Enumerated(EnumType.ORDINAL)
     var tipoHeladeria: TipoHeladeria,
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     var duenio: Duenio,
 ) {
 
@@ -17,7 +17,8 @@ class Heladeria(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
-    @ElementCollection
+    // TODO: quitar el fetch eager y hacerlo lazy
+    @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyColumn(name = "gusto")
     @Column(name = "dificultad")
     @CollectionTable(name = "heladeria_gustos", joinColumns = [JoinColumn(name = "heladeria_id")])

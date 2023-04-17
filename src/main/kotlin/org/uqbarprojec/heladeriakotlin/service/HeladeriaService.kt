@@ -1,12 +1,19 @@
 package org.uqbarprojec.heladeriakotlin.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.uqbarprojec.heladeriakotlin.dao.RepoHeladeria
 import org.uqbarprojec.heladeriakotlin.dto.ActualizarHeladeriaDTO
 import org.uqbarprojec.heladeriakotlin.model.Heladeria
 
 @Service
-class HeladeriaService(private val repoHeladeria: RepoHeladeria, private val duenioService: DuenioService) {
+class HeladeriaService {
+
+    @Autowired
+    lateinit var repoHeladeria: RepoHeladeria
+
+    @Autowired
+    lateinit var duenioService: DuenioService
 
     fun findAll(): List<Heladeria> {
         return repoHeladeria.findAll().toList()
@@ -16,9 +23,9 @@ class HeladeriaService(private val repoHeladeria: RepoHeladeria, private val due
         return repoHeladeria.findByNombreContainingIgnoreCase(nombre)
     }
 
-    fun findById(heladeriaId: Long): Heladeria {
-        return repoHeladeria.findById(heladeriaId)
-            .orElseThrow { throw NotFoundException("No se encontró la heladería indicada: $heladeriaId") }
+    fun findById(id: Long): Heladeria {
+        return repoHeladeria.findById(id)
+            .orElseThrow { throw NotFoundException("No se encontró la heladería indicada: $id") }
     }
 
     fun validarYGuardar(heladeria: Heladeria): Heladeria {
