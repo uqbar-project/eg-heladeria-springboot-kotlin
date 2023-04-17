@@ -1,9 +1,9 @@
-package org.uqbarprojec.heladeriakotlin.service
+package org.uqbar.heladeriakotlin.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.uqbarprojec.heladeriakotlin.dao.RepoDuenio
-import org.uqbarprojec.heladeriakotlin.model.Duenio
+import org.uqbar.heladeriakotlin.dao.RepoDuenio
+import org.uqbar.heladeriakotlin.model.Duenio
 
 @Service
 class DuenioService {

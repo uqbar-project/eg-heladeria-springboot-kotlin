@@ -1,10 +1,10 @@
-package org.uqbarprojec.heladeriakotlin.model
+package org.uqbar.heladeriakotlin.model
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import org.uqbarprojec.heladeriakotlin.service.UserException
+import org.uqbar.heladeriakotlin.service.UserException
 
 @Entity
 class Duenio(val nombreCompleto: String) {

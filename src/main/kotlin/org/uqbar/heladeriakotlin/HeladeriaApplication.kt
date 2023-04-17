@@ -1,4 +1,4 @@
-package org.uqbarprojec.heladeriakotlin
+package org.uqbar.heladeriakotlin
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

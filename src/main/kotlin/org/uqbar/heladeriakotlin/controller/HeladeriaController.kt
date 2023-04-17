@@ -1,14 +1,14 @@
-package org.uqbarprojec.heladeriakotlin.controller
+package org.uqbar.heladeriakotlin.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import org.uqbarprojec.heladeriakotlin.dto.ActualizarHeladeriaDTO
-import org.uqbarprojec.heladeriakotlin.dto.HeladeriaDTO
-import org.uqbarprojec.heladeriakotlin.model.Duenio
-import org.uqbarprojec.heladeriakotlin.model.Heladeria
-import org.uqbarprojec.heladeriakotlin.service.DuenioService
-import org.uqbarprojec.heladeriakotlin.service.HeladeriaService
+import org.uqbar.heladeriakotlin.dto.ActualizarHeladeriaDTO
+import org.uqbar.heladeriakotlin.dto.HeladeriaDTO
+import org.uqbar.heladeriakotlin.model.Duenio
+import org.uqbar.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.service.DuenioService
+import org.uqbar.heladeriakotlin.service.HeladeriaService
 import java.util.*
 
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])

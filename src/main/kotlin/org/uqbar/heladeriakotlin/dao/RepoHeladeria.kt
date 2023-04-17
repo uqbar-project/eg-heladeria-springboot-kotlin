@@ -1,9 +1,9 @@
-package org.uqbarprojec.heladeriakotlin.dao
+package org.uqbar.heladeriakotlin.dao
 
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
-import org.uqbarprojec.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.model.Heladeria
 import java.util.*
 
 @Repository

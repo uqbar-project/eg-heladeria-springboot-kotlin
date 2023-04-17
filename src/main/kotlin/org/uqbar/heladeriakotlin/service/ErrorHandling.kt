@@ -1,4 +1,4 @@
-package org.uqbarprojec.heladeriakotlin.service
+package org.uqbar.heladeriakotlin.service
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus

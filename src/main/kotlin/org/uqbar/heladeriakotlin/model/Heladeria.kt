@@ -1,7 +1,7 @@
-package org.uqbarprojec.heladeriakotlin.model
+package org.uqbar.heladeriakotlin.model
 
 import jakarta.persistence.*
-import org.uqbarprojec.heladeriakotlin.service.UserException
+import org.uqbar.heladeriakotlin.service.UserException
 import java.text.Normalizer
 
 @Entity

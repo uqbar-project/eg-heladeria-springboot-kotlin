@@ -1,12 +1,12 @@
-package org.uqbarprojec.heladeriakotlin
+package org.uqbar.heladeriakotlin
 
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
-import org.uqbarprojec.heladeriakotlin.dao.RepoDuenio
-import org.uqbarprojec.heladeriakotlin.dao.RepoHeladeria
-import org.uqbarprojec.heladeriakotlin.model.Duenio
-import org.uqbarprojec.heladeriakotlin.model.Heladeria
-import org.uqbarprojec.heladeriakotlin.model.TipoHeladeria
+import org.uqbar.heladeriakotlin.dao.RepoDuenio
+import org.uqbar.heladeriakotlin.dao.RepoHeladeria
+import org.uqbar.heladeriakotlin.model.Duenio
+import org.uqbar.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.model.TipoHeladeria
 
 @Component
 class Bootstrap(

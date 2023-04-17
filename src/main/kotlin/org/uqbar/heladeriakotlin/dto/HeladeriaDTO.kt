@@ -1,8 +1,8 @@
-package org.uqbarprojec.heladeriakotlin.dto
+package org.uqbar.heladeriakotlin.dto
 
-import org.uqbarprojec.heladeriakotlin.model.Duenio
-import org.uqbarprojec.heladeriakotlin.model.Heladeria
-import org.uqbarprojec.heladeriakotlin.model.TipoHeladeria
+import org.uqbar.heladeriakotlin.model.Duenio
+import org.uqbar.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.model.TipoHeladeria
 
 class HeladeriaDTO(
     val id: Long,

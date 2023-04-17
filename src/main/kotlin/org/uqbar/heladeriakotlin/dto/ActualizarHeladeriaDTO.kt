@@ -1,7 +1,7 @@
-package org.uqbarprojec.heladeriakotlin.dto
+package org.uqbar.heladeriakotlin.dto
 
-import org.uqbarprojec.heladeriakotlin.model.Heladeria
-import org.uqbarprojec.heladeriakotlin.model.TipoHeladeria
+import org.uqbar.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.model.TipoHeladeria
 
 class ActualizarHeladeriaDTO(
     val nombre: String? = null,

@@ -1,4 +1,4 @@
-package org.uqbarprojec.heladeriakotlin.utils
+package org.uqbar.utils
 
 import com.google.gson.Gson
 

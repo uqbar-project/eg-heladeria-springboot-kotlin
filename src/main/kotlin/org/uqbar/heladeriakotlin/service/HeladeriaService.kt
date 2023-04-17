@@ -1,10 +1,10 @@
-package org.uqbarprojec.heladeriakotlin.service
+package org.uqbar.heladeriakotlin.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.uqbarprojec.heladeriakotlin.dao.RepoHeladeria
-import org.uqbarprojec.heladeriakotlin.dto.ActualizarHeladeriaDTO
-import org.uqbarprojec.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.dao.RepoHeladeria
+import org.uqbar.heladeriakotlin.dto.ActualizarHeladeriaDTO
+import org.uqbar.heladeriakotlin.model.Heladeria
 
 @Service
 class HeladeriaService {

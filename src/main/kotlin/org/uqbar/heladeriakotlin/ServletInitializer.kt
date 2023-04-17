@@ -1,4 +1,4 @@
-package org.uqbarprojec.heladeriakotlin
+package org.uqbar.heladeriakotlin
 
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
