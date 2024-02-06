@@ -7,7 +7,7 @@ import java.text.Normalizer
 @Entity
 class Heladeria(
     var nombre: String,
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     var tipoHeladeria: TipoHeladeria,
     @ManyToOne(fetch = FetchType.LAZY)
     var duenio: Duenio,
