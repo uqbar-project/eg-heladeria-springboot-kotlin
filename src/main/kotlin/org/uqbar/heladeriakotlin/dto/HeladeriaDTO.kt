@@ -5,7 +5,7 @@ import org.uqbar.heladeriakotlin.model.Heladeria
 import org.uqbar.heladeriakotlin.model.TipoHeladeria
 
 class HeladeriaDTO(
-    val id: Long,
+    val id: Long? = null,
     val nombre: String,
     val tipoHeladeria: TipoHeladeria,
     val duenio: Duenio,

@@ -7,14 +7,17 @@ import jakarta.persistence.Id
 import org.uqbar.heladeriakotlin.service.UserException
 
 @Entity
-class Duenio(val nombreCompleto: String) {
+class Duenio(
+    val nombreCompleto: String,
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
+    val id: Long? = null
+) {
+
 
     fun validar() {
         if (nombreCompleto.trim().isEmpty()) {
-            throw UserException("El nombre para el dueño no puede ser vacío")
+            throw UserException("El nombre de un dueño no puede estar vacio")
         }
     }
 }

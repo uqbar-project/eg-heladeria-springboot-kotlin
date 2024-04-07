@@ -5,9 +5,4 @@ import org.springframework.stereotype.Repository
 import org.uqbar.heladeriakotlin.model.Duenio
 
 @Repository
-interface RepoDuenio : CrudRepository<Duenio, Long> {
-
-    fun findByNombreCompleto(nombreCompleto: String): Duenio
-
-    fun deleteByNombreCompleto(nombreCompleto: String)
-}
+interface RepoDuenio : CrudRepository<Duenio, Long>
