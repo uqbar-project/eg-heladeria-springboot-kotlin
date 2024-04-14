@@ -11,6 +11,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.uqbar.heladeriakotlin.model.Duenio
+import org.uqbar.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.model.TipoHeladeria
+import org.uqbar.utils.getHeladeriaBase
 import org.uqbar.utils.toJSON
 
 @SpringBootTest
@@ -24,54 +28,38 @@ class HeladeriaApplicationTests {
 
     @Test
     fun `Buscar una heladeria indicando parte del nombre`() {
-        mockMvc
-            .perform(get("/heladerias/buscar").param("nombre", "tuc"))
-            .andExpect(status().isOk)
+        mockMvc.perform(get("/heladerias/buscar").param("nombre", "tuc")).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$[0].nombre").value("Tucán"))
     }
 
     @Test
     fun `Listar todas las heladerias si no se ingresa texto de busqueda`() {
-        mockMvc
-            .perform(get("/heladerias/buscar"))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.length()").value(3))
+        mockMvc.perform(get("/heladerias/buscar")).andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(3))
     }
 
     @Test
     fun `Buscar una heladeria por nombre no encuentra ninguna que coincida`() {
-        mockMvc
-            .perform(get("/heladerias/buscar").param("nombre", "inexistente"))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.length()").value(0))
+        mockMvc.perform(get("/heladerias/buscar").param("nombre", "inexistente")).andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(0))
     }
 
     @Test
     fun `Buscar una heladeria por id`() {
-        mockMvc
-            .perform(get("/heladerias/id/{id}", "1"))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.nombre").value("Tucán"))
+        mockMvc.perform(get("/heladerias/id/{id}", "1")).andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.nombre").value("Tucán"))
     }
 
     @Test
     fun `Buscar una heladeria por id inexistente devuelve not found`() {
-        mockMvc
-            .perform(get("/heladerias/id/{id}", "999"))
-            .andExpect(status().isNotFound)
+        mockMvc.perform(get("/heladerias/id/{id}", "999")).andExpect(status().isNotFound)
     }
 
     @Test
     fun `Listar todos los duenios`() {
-        mockMvc
-            .perform(get("/duenios"))
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.length()").value(3))
+        mockMvc.perform(get("/duenios")).andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(3))
     }
 
     @Test
@@ -79,14 +67,9 @@ class HeladeriaApplicationTests {
     fun `Crear un nuevo duenio con un payload valido`() {
         val body = mapOf("nombreCompleto" to "Fernando Dodino").toJSON()
 
-        mockMvc
-            .perform(
-                post("/duenios")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+            post("/duenios").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.nombreCompleto").value("Fernando Dodino"))
     }
 
@@ -94,188 +77,165 @@ class HeladeriaApplicationTests {
     fun `No se puede crear un duenio con nombre vacio`() {
         val body = mapOf("nombreCompleto" to "").toJSON()
 
-        mockMvc
-            .perform(
-                post("/duenios")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isBadRequest)
+        mockMvc.perform(
+            post("/duenios").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
     }
 
     @Test
     @Transactional
-    fun `Actualizar parcialmente una heladeria`() {
-        val body = mapOf("nombre" to "nuevoNombre").toJSON()
+    fun `Al actualizar una heladeria el id en el body es obligatorio`() {
+        val body = Heladeria("Test", TipoHeladeria.ECONOMICA, Duenio("Carlos", 1L)).apply {
+            this.gustos = mutableMapOf("Chocolate" to 5)
+        }.toJSON()
 
-        mockMvc
-            .perform(
-                patch("/heladerias/{heladeriaId}", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @Transactional
+    fun `Al actualizar una heladeria el id en el body debe coincidir con el id en la URL`() {
+        val idBody = 1L
+        val idURL = "2"
+        val body = Heladeria("Test", TipoHeladeria.ECONOMICA, Duenio("Carlos", idBody), 1L).apply {
+            this.gustos = mutableMapOf("Chocolate" to 5)
+        }.toJSON()
+
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", idURL).contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `Para actualizar una heladeria el nombre no puede estar vacio`() {
+        val body = getHeladeriaBase().apply {
+            this.nombre = ""
+        }.toJSON()
+
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @Transactional
+    fun `Actualizar el nombre de una heladeria`() {
+        val body = getHeladeriaBase().apply {
+            this.nombre = "nuevoNombre"
+        }.toJSON()
+
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.nombre").value("nuevoNombre"))
     }
 
     @Test
     @Transactional
     fun `Actualizar el duenio de una heladeria`() {
-        val body = object {
-            val duenio = object {
-                val id = 1
-            }
+        val body = getHeladeriaBase().apply {
+            this.duenio = Duenio("Alejandro Dini", 2L) // el nombre es irrelevante, solo importa el id
         }.toJSON()
 
-        mockMvc
-            .perform(
-                patch("/heladerias/{heladeriaId}", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.duenio.nombreCompleto").value("Carlos Martinelli"))
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.duenio.id").value(2L))
+    }
+
+    @Test
+    @Transactional
+    fun `Para actualizar el duenio de una heladeria el id del duenio es obligatorio`() {
+        val body = getHeladeriaBase().apply {
+            this.duenio = Duenio("Alejandro Dini")
+        }.toJSON()
+
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `No se puede actualizar el duenio de una heladeria a uno inexistente`() {
+        val body = getHeladeriaBase().apply {
+            this.duenio = Duenio("Carlos Martinelli", 9999L)
+        }.toJSON()
+
+
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}/", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isNotFound)
     }
 
     @Test
     @Transactional
     fun `Actualizar el tipo de una heladeria`() {
-        val body = mapOf("tipoHeladeria" to "INDUSTRIAL").toJSON()
+        val body = getHeladeriaBase().apply {
+            this.tipoHeladeria = TipoHeladeria.INDUSTRIAL
+        }.toJSON()
 
-        mockMvc
-            .perform(
-                patch("/heladerias/{heladeriaId}", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.tipoHeladeria").value("INDUSTRIAL"))
     }
 
-    @Test
-    fun `No se puede actualizar una heladeria con datos invalidos`() {
-        val body = mapOf("nombre" to "").toJSON()
-
-        mockMvc
-            .perform(
-                patch("/heladerias/{heladeriaId}", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    //TODO: seria más correcto que devuelva 422 (Unprocessable Entity)
-    fun `Actualizar el duenio de una heladeria a uno inexistente devuelve not found`() {
-        val body = mapOf("duenio" to mapOf("id" to "9999")).toJSON()
-
-        mockMvc
-            .perform(
-                patch("/heladerias/{heladeriaId}/", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isNotFound)
-    }
 
     @Test
     @Transactional
-    fun `Agregar un gusto a una heladeria`() {
-        val body = mapOf("nuevo" to "7").toJSON()
+    fun `Modificar los gustos de una heladeria`() {
+        val body = getHeladeriaBase().apply {
+            this.gustos["nuevo"] = 7
+        }.toJSON()
 
-        mockMvc
-            .perform(
-                post("/heladerias/{heladeriaId}/gustos", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.gustos.nuevo").value(7))
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isOk).andExpect(jsonPath("$.gustos.nuevo").value(7))
     }
 
     @Test
-    fun `Agregar un gusto con dificultad mayor a 10 devuelve bad request`() {
-        val body = mapOf("nuevo" to "11").toJSON()
+    fun `Un gusto no puede tener una dificultad mayor a 10`() {
+        val body = getHeladeriaBase().apply {
+            this.gustos["nuevo"] = 11
+        }.toJSON()
 
-        mockMvc
-            .perform(
-                post("/heladerias/{heladeriaId}/gustos", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isBadRequest)
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
     }
 
     @Test
-    fun `Agregar un gusto con dificultad menor a 1 devuelve bad request`() {
-        val body = mapOf("nuevo" to "0").toJSON()
+    fun `Un gusto no puede tener una dificultad menor a 1`() {
+        val body = getHeladeriaBase().apply {
+            this.gustos["nuevo"] = 0
+        }.toJSON()
 
-        mockMvc
-            .perform(
-                post("/heladerias/{heladeriaId}/gustos", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isBadRequest)
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
     }
 
     @Test
-    @Transactional
-    fun `Eliminar un gusto de una heladeria`() {
-        val body = mapOf("frutilla" to "7").toJSON()
+    fun `Una heladeria debe tener al menos un gusto`() {
+        val body = getHeladeriaBase().apply {
+            this.gustos = mutableMapOf()
+        }.toJSON()
 
-        mockMvc
-            .perform(
-                delete("/heladerias/{heladeriaId}/gustos", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.gustos.frutilla").doesNotExist())
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
     }
 
     @Test
-    fun `No se puede eliminar un gusto que no pertenece a una heladeria`() {
-        val body = mapOf("inexistente" to "7").toJSON()
-
-        mockMvc
-            .perform(
-                delete("/heladerias/{heladeriaId}/gustos", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isBadRequest)
+    fun `Los nombres de los gustos de una heladeria no pueden ser string vacios`() {
+        val body = getHeladeriaBase().apply {
+            this.gustos[""] = 5
+        }.toJSON()
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isBadRequest)
     }
-
-    @Test
-    fun `No se puede eliminar el ultimo gusto de una heladeria`() {
-        val body = mapOf("crema americana" to "2").toJSON()
-
-        mockMvc
-            .perform(
-                delete("/heladerias/{heladeriaId}/gustos", "3")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `No se puede crear un gusto con nombre vacio`() {
-        val body = mapOf("" to "7").toJSON()
-
-        mockMvc
-            .perform(
-                post("/heladerias/{heladeriaId}/gustos", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(body)
-            )
-            .andExpect(status().isBadRequest)
-    }
-
 
 }

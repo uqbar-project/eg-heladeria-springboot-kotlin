@@ -3,7 +3,6 @@ package org.uqbar.heladeriakotlin.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.uqbar.heladeriakotlin.dao.RepoHeladeria
-import org.uqbar.heladeriakotlin.dto.ActualizarHeladeriaDTO
 import org.uqbar.heladeriakotlin.model.Heladeria
 
 @Service
@@ -28,30 +27,15 @@ class HeladeriaService {
             .orElseThrow { throw NotFoundException("No se encontró la heladería indicada: $id") }
     }
 
-    fun validarYGuardar(heladeria: Heladeria): Heladeria {
-        heladeria.validar()
-        return repoHeladeria.save(heladeria)
-    }
+    fun actualizar(heladeriaId: Long, heladeriaRequest: Heladeria): Heladeria {
+        val duenioId = heladeriaRequest.duenio.id
+        if (duenioId === null) throw UserException("El id del dueño no puede ser nulo")
 
-    fun actualizar(heladeriaId: Long, heladeriaRequest: ActualizarHeladeriaDTO): Heladeria {
-        val heladeriaFound: Heladeria = findById(heladeriaId)
-        if (heladeriaRequest.duenio?.id != null) {
-            heladeriaFound.duenio = duenioService.findById(heladeriaRequest.duenio.id)
-        }
-        heladeriaRequest.aplicarCambiosA(heladeriaFound)
-        return validarYGuardar(heladeriaFound)
-    }
+        findById(heladeriaId) // Si no existe tira una excepción
+        heladeriaRequest.duenio = duenioService.findById(duenioId)
+        heladeriaRequest.validar()
 
-    fun agregarGustos(heladeriaId: Long, gustos: MutableMap<String, Int>): Heladeria {
-        val heladeria: Heladeria = findById(heladeriaId)
-        heladeria.agregarGustos(gustos)
-        return validarYGuardar(heladeria)
-    }
-
-    fun eliminarGustos(heladeriaId: Long, gustos: MutableMap<String, Int>): Heladeria {
-        val heladeria: Heladeria = findById(heladeriaId)
-        gustos.forEach { (gusto, _) -> heladeria.eliminarGusto(gusto) }
-        return validarYGuardar(heladeria)
+        return repoHeladeria.save(heladeriaRequest)
     }
 
 

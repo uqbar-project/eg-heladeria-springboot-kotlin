@@ -39,7 +39,16 @@ class Bootstrap(
             TipoHeladeria.ECONOMICA,
             carlosMartinelli,
         )
-        tucan.gustos = mutableMapOf("frutilla" to 3, "maracuya" to 2, "dulce de leche" to 4, "pistacchio" to 6)
+        tucan.gustos =
+            mutableMapOf(
+                "frutilla" to 3,
+                "maracuya" to 2,
+                "dulce de leche" to 4,
+                "pistacchio" to 6,
+                "chocolate" to 4,
+                "tramontana" to 6,
+                "sambayón" to 7,
+            )
 
         val monteOlivia = Heladeria(
             "Monte Olivia",
