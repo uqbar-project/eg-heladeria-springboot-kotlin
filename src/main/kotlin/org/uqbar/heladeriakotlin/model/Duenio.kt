@@ -14,7 +14,6 @@ class Duenio(
     val id: Long? = null
 ) {
 
-
     fun validar() {
         if (nombreCompleto.trim().isEmpty()) {
             throw UserException("El nombre de un dueño no puede estar vacio")

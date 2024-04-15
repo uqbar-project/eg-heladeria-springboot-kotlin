@@ -38,5 +38,4 @@ class HeladeriaService {
         return repoHeladeria.save(heladeriaRequest)
     }
 
-
 }

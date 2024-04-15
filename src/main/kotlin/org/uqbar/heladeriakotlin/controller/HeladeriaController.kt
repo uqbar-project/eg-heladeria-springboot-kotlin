@@ -53,5 +53,4 @@ class HeladeriaController {
         return heladeriaService.actualizar(heladeriaId, heladeria)
     }
 
-
 }
