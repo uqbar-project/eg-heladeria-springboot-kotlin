@@ -12,6 +12,6 @@ interface RepoHeladeria : CrudRepository<Heladeria, Long> {
     @EntityGraph(attributePaths = ["duenio"])
     fun findByNombreContainingIgnoreCase(text: String): List<Heladeria>
 
-    @EntityGraph(attributePaths = ["duenio"], type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = ["duenio", "gustos"], type = EntityGraph.EntityGraphType.LOAD)
     override fun findById(id: Long): Optional<Heladeria>
 }

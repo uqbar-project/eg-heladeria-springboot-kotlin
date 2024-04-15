@@ -13,8 +13,7 @@ open class Heladeria(
     val id: Long? = null
 ) {
 
-    // TODO: quitar el fetch eager y hacerlo lazy
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @MapKeyColumn(name = "gusto")
     @Column(name = "dificultad")
     @CollectionTable(name = "heladeria_gustos", joinColumns = [JoinColumn(name = "heladeria_id")])
