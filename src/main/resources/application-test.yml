@@ -1,6 +1,8 @@
+server:
+  port: 8080
+
 spring:
   database: H2
-
   h2:
     console:
       enabled: true

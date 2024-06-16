@@ -19,7 +19,7 @@ class Bootstrap(
     val manuelaFritzler = Duenio("Manuela Fritzler y Carlos Gorriti")
 
     override fun afterPropertiesSet() {
-        if (repoHeladeria.count() < 3) {
+        if (repoHeladeria.count() === 0L) {
             initDuenios()
             initHeladerias()
         }
