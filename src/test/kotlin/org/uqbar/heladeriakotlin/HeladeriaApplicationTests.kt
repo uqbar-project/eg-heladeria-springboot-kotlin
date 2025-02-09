@@ -47,13 +47,13 @@ class HeladeriaApplicationTests {
 
     @Test
     fun `Buscar una heladeria por id`() {
-        mockMvc.perform(get("/heladerias/id/{id}", "1")).andExpect(status().isOk)
+        mockMvc.perform(get("/heladerias/{id}", "1")).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.nombre").value("Tucán"))
     }
 
     @Test
     fun `Buscar una heladeria por id inexistente devuelve not found`() {
-        mockMvc.perform(get("/heladerias/id/{id}", "999")).andExpect(status().isNotFound)
+        mockMvc.perform(get("/heladerias/{id}", "999")).andExpect(status().isNotFound)
     }
 
     @Test

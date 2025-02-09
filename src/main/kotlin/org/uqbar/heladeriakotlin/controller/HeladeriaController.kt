@@ -8,7 +8,6 @@ import org.uqbar.heladeriakotlin.model.Heladeria
 import org.uqbar.heladeriakotlin.service.DuenioService
 import org.uqbar.heladeriakotlin.service.HeladeriaService
 import org.uqbar.heladeriakotlin.service.UserException
-import kotlin.math.absoluteValue
 
 @CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RestController
@@ -26,7 +25,7 @@ class HeladeriaController {
         return heladeriaService.findByNombre(nombre).map { HeladeriaDTO.fromHeladeria(it) }.sortedBy { it.nombre }
     }
 
-    @GetMapping("/heladerias/id/{id}")
+    @GetMapping("/heladerias/{id}")
     fun getHeladeria(@PathVariable id: Long): Heladeria {
         return heladeriaService.findById(id)
     }
@@ -47,7 +46,7 @@ class HeladeriaController {
         @PathVariable heladeriaId: Long
     ): Heladeria {
         if (heladeria.id === null) throw UserException("El id de la heladería no puede ser nulo")
-        if (heladeria.id.absoluteValue !== heladeriaId.absoluteValue) throw UserException(
+        if (heladeria.id != heladeriaId) throw UserException(
             "El id recibido en el body no coincide con el id recibido en la URL"
         )
         return heladeriaService.actualizar(heladeriaId, heladeria)
