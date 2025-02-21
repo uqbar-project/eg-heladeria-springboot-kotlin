@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE}
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
     driver-class-name: org.postgresql.Driver
   jpa:
