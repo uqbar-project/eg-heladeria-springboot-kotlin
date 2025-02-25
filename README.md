@@ -3,7 +3,7 @@
 
 [![build](https://github.com/uqbar-project/eg-heladeria-springboot-kotlin/actions/workflows/build.yml/badge.svg)](https://github.com/uqbar-project/eg-heladeria-springboot-kotlin/actions/workflows/build.yml) [![codecov](https://codecov.io/gh/uqbar-project/eg-heladeria-springboot-kotlin/branch/main/graph/badge.svg?token=xQ8TFzLbHV)](https://codecov.io/gh/uqbar-project/eg-heladeria-springboot-kotlin)
 
-Este ejemplo está implementado con Kotlin y Spring Boot, se recomienda acompañarlo con el frontend desarrollado en [Svelte](https://github.com/uqbar-project/eg-heladeria-svelte).
+Este ejemplo está implementado con Kotlin y Spring Boot, se recomienda acompañarlo con el frontend desarrollado en [React](https://github.com/uqbar-project/eg-heladeria-react-phm).
 
 Además necesitarás tener levantada una base de datos MySQL con un esquema llamado `heladeria`
 
