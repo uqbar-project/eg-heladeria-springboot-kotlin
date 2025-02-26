@@ -17,8 +17,6 @@ class UsuarioController {
 
     @PostMapping("/login")
     fun login(@RequestBody credencialesDTO: CredencialesDTO): String {
-        usuarioService.login(credencialesDTO)
-        // return tokenUtils.createToken(credencialesDTO.usuario, credencialesDTO.password)!!
-        return "ok"
+        return usuarioService.login(credencialesDTO)
     }
 }

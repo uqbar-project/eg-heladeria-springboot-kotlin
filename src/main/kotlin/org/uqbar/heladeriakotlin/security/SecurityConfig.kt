@@ -12,14 +12,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.SecurityFilterChain
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
 
     @Autowired
-    lateinit var userDetailsService: UserDetailsService
+    lateinit var jwtAuthorizationFilter: JWTAuthorizationFilter
 
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
@@ -29,12 +29,12 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 it.requestMatchers(HttpMethod.POST, "/login").permitAll()
                 it.requestMatchers("/error").permitAll()
-                // No hace falta permisos para ver datos
+                // No hace falta permisos para ver información de la heladería
                 it.requestMatchers(HttpMethod.GET, "/**").permitAll()
                 // Permisos de admin para modificar
-                it.requestMatchers(HttpMethod.POST, "/heladerias").hasAuthority("ROLE_ADMIN")
-                it.requestMatchers(HttpMethod.POST, "/duenios").hasAuthority("ROLE_ADMIN")
-                it.requestMatchers(HttpMethod.PUT, "/heladerias/**").hasAuthority("ROLE_ADMIN")
+                it.requestMatchers(HttpMethod.POST, "/heladerias").hasAuthority("admin")
+                it.requestMatchers(HttpMethod.POST, "/duenios").hasAuthority("admin")
+                it.requestMatchers(HttpMethod.PUT, "/heladerias").hasAuthority("admin")
                     //
                     .anyRequest().authenticated()
             }
@@ -43,7 +43,7 @@ class SecurityConfig {
                 configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             // agregado para JWT, si comentás estas dos líneas tendrías Basic Auth
-            //.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter::class.java)
             // fin agregado
             .exceptionHandling(Customizer.withDefaults())
             .build()

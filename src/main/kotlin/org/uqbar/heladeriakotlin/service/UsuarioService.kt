@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import org.uqbar.heladeriakotlin.dao.RepoUsuarios
 import org.uqbar.heladeriakotlin.dto.CredencialesDTO
 import org.uqbar.heladeriakotlin.errorHandling.CredencialesInvalidasException
+import org.uqbar.heladeriakotlin.security.TokenUtils
 
 @Service
 @Transactional
@@ -21,43 +22,17 @@ class UsuarioService : UserDetailsService {
    @Autowired
    lateinit var usuarioRepository: RepoUsuarios
 
-//   @Autowired
-//   lateinit var tokenUtils: TokenUtils
+   @Autowired
+   lateinit var tokenUtils: TokenUtils
 
    @Transactional(Transactional.TxType.REQUIRED)
-   fun login(credenciales: CredencialesDTO) {
-      val usuario = validarUsuario(credenciales.usuario)
-//      usuario.loguearse()
-//      usuario.validarCredenciales(credenciales.password)
+   fun login(credencialesDTO: CredencialesDTO): String {
+      val usuario = validarUsuario(credencialesDTO.usuario)
+      usuario.validarCredenciales(credencialesDTO.password)
+      return tokenUtils.createToken(credencialesDTO.usuario, credencialesDTO.password, usuario.roles.map { it.name })!!
    }
 
    fun validarUsuario(nombreUsuario: String) = usuarioRepository.findByUsername(nombreUsuario).orElseThrow { CredencialesInvalidasException() }
-
-//   @Transactional(Transactional.TxType.NEVER)
-//   fun usuarios() = usuarioRepository.findAll().map { usuario ->
-//      usuario.toUsuarioBaseDTO()
-//   }
-
-//   @Transactional(Transactional.TxType.REQUIRED)
-//   fun crearUsuario(credencialesDTO: CredencialesDTO): Usuario {
-//      if (usuarioRepository.findByNombre(credencialesDTO.usuario).isPresent) {
-//         throw BusinessException("Ya existe un usuario con ese nombre")
-//      }
-//      val usuario = Usuario().apply {
-//         nombre = credencialesDTO.usuario
-//         crearPassword(credencialesDTO.password)
-//         validar()
-//      }
-//      usuarioRepository.save(usuario)
-//      return usuario
-//   }
-//
-//   @Transactional(Transactional.TxType.REQUIRED)
-//   fun eliminarUsuario(idUsuario: Long): Usuario {
-//      val usuario = getUsuarioPorId(idUsuario)
-//      usuarioRepository.delete(usuario)
-//      return usuario
-//   }
 
    // NOT_SUPPORTED permite que otro metodo en transacción lo llame y luego continúe con dicha transacción
    // con NEVER si intentamos llamar desde un metodo que tiene transacción a verUsuario, dispara una excepción
@@ -72,10 +47,5 @@ class UsuarioService : UserDetailsService {
    }
 
    private fun roleFor(username: String) = if (username.lowercase() == "admin") listOf(SimpleGrantedAuthority("ROLE_ADMIN")) else listOf()
-
-   private fun getUsuarioPorId(idUsuario: Long) = usuarioRepository.findById(idUsuario).orElseThrow { NotFoundException("No se encontró el usuario con el identificador $idUsuario") }
-
-   // El efecto que tiene es simplemente devolver un ok si el filtro de JWT (JWTAuthorizationFilter) pasa
-   fun validar(): String = "ok"
 
 }
