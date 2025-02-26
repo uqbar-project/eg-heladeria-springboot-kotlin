@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
@@ -27,15 +26,14 @@ class SecurityConfig {
             .cors { it.disable() }
             .csrf { it.disable() }
             .authorizeHttpRequests {
+                // Queremos que cualquier persona se pueda loguear y mostrar errores
                 it.requestMatchers(HttpMethod.POST, "/login").permitAll()
                 it.requestMatchers("/error").permitAll()
-                // No hace falta permisos para ver información de la heladería
-                it.requestMatchers(HttpMethod.GET, "/**").permitAll()
                 // Permisos de admin para modificar
                 it.requestMatchers(HttpMethod.POST, "/heladerias").hasAuthority("admin")
                 it.requestMatchers(HttpMethod.POST, "/duenios").hasAuthority("admin")
-                it.requestMatchers(HttpMethod.PUT, "/heladerias").hasAuthority("admin")
-                    //
+                it.requestMatchers(HttpMethod.PUT, "/heladerias/**").hasAuthority("admin")
+                    // Default: que se autentique para poder ver información
                     .anyRequest().authenticated()
             }
             .httpBasic(Customizer.withDefaults())

@@ -6,8 +6,8 @@ import org.uqbar.heladeriakotlin.service.UserException
 @Entity
 open class Heladeria(
     var nombre: String,
-    @Enumerated(EnumType.STRING) var tipoHeladeria: TipoHeladeria,
-    @ManyToOne(fetch = FetchType.LAZY) var duenio: Duenio,
+    @Enumerated(EnumType.STRING) open var tipoHeladeria: TipoHeladeria,
+    @ManyToOne(fetch = FetchType.LAZY) open var duenio: Duenio,
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
