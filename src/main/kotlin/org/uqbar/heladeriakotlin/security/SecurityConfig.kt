@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +30,9 @@ class SecurityConfig {
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 // Queremos que cualquier persona se pueda loguear y mostrar errores
-                it.requestMatchers(HttpMethod.POST, "/login").permitAll()
+                // Importante: no definirlo solo para el method POST
+                // porque CORS requiere que también puedas mandar el OPTIONS para hacer el pre-flight
+                it.requestMatchers("/login").permitAll()
                 it.requestMatchers("/error").permitAll()
                 // Permisos de admin para modificar
                 it.requestMatchers(HttpMethod.POST, "/heladerias").hasAuthority("admin")
@@ -51,5 +56,18 @@ class SecurityConfig {
     @Throws(Exception::class)
     fun authenticationManager(configuration: AuthenticationConfiguration): AuthenticationManager {
         return configuration.authenticationManager
+    }
+
+    @Bean
+    fun corsConfigurer(): WebMvcConfigurer {
+        return object : WebMvcConfigurer {
+            override fun addCorsMappings(registry: CorsRegistry) {
+                registry.addMapping("/**")
+                    .allowedOrigins("http://localhost:5173")
+                    .allowedHeaders("*")
+                    .allowedMethods("POST", "OPTIONS", "GET", "PUT", "DELETE")
+                    .allowCredentials(true)
+            }
+        }
     }
 }

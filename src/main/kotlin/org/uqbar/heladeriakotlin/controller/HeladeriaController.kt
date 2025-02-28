@@ -9,7 +9,6 @@ import org.uqbar.heladeriakotlin.service.DuenioService
 import org.uqbar.heladeriakotlin.service.HeladeriaService
 import org.uqbar.heladeriakotlin.service.UserException
 
-@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RestController
 class HeladeriaController {
 
