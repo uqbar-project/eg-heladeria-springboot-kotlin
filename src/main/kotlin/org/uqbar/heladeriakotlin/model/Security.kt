@@ -2,6 +2,8 @@ package org.uqbar.heladeriakotlin.model
 
 
 import jakarta.persistence.*
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.uqbar.heladeriakotlin.errorHandling.BusinessException
@@ -28,7 +30,7 @@ class Usuario {
 
     var username: String = ""
     var email: String = ""
-    var password: String = ""
+    private var password: String = ""
 
     @ManyToMany
     @JoinTable(
@@ -69,5 +71,10 @@ class Usuario {
         password = getDefaultEncoder().encode(rawPassword)
     }
 
+    fun buildUser() = User(username, password, roles.map { SimpleGrantedAuthority(it.name) })
+
 }
 
+enum class ROLES(val roleName: String) {
+    ADMIN("admin"), READONLY("readonly")
+}

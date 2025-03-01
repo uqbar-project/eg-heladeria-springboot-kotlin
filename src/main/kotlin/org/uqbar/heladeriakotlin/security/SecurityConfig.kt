@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import org.uqbar.heladeriakotlin.model.ROLES
 
 
 @Configuration
@@ -34,10 +35,11 @@ class SecurityConfig {
                 // porque CORS requiere que también puedas mandar el OPTIONS para hacer el pre-flight
                 it.requestMatchers("/login").permitAll()
                 it.requestMatchers("/error").permitAll()
+                it.requestMatchers(HttpMethod.OPTIONS).permitAll()
                 // Permisos de admin para modificar
-                it.requestMatchers(HttpMethod.POST, "/heladerias").hasAuthority("admin")
-                it.requestMatchers(HttpMethod.POST, "/duenios").hasAuthority("admin")
-                it.requestMatchers(HttpMethod.PUT, "/heladerias/**").hasAuthority("admin")
+                it.requestMatchers(HttpMethod.POST, "/heladerias").hasAuthority(ROLES.ADMIN.name)
+                it.requestMatchers(HttpMethod.POST, "/duenios").hasAuthority(ROLES.ADMIN.name)
+                it.requestMatchers(HttpMethod.PUT, "/heladerias/**").hasAuthority(ROLES.ADMIN.name)
                     // Default: que se autentique para poder ver información
                     .anyRequest().authenticated()
             }

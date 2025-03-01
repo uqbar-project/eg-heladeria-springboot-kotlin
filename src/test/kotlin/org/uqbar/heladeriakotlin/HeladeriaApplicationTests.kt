@@ -16,10 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.uqbar.heladeriakotlin.dao.RepoUsuarios
 import org.uqbar.heladeriakotlin.dto.CredencialesDTO
-import org.uqbar.heladeriakotlin.model.Duenio
-import org.uqbar.heladeriakotlin.model.Heladeria
-import org.uqbar.heladeriakotlin.model.TipoHeladeria
-import org.uqbar.heladeriakotlin.model.Usuario
+import org.uqbar.heladeriakotlin.model.*
 import org.uqbar.heladeriakotlin.security.TokenUtils
 import org.uqbar.utils.getHeladeriaBase
 import org.uqbar.utils.toJSON
@@ -50,8 +47,8 @@ class HeladeriaApplicationTests {
     @BeforeEach
     fun crearUsuarios() {
         repoUsuarios.deleteAll()
-        tokenUsuarioOk = crearUsuario("elComun1", "password1", "readonly")
-        tokenAdminOk = crearUsuario("admin", "123456", "admin")
+        tokenUsuarioOk = crearUsuario("elComun1", "password1", ROLES.READONLY.name)
+        tokenAdminOk = crearUsuario("admin", "123456", ROLES.ADMIN.name)
     }
 
     // region POST /login
@@ -449,6 +446,6 @@ class HeladeriaApplicationTests {
             crearPassword(password)
         }
         repoUsuarios.save(usuario)
-        return "Bearer " + tokenUtils.createToken(usuario.username, usuario.password, listOf(roles))!!
+        return "Bearer " + tokenUtils.createToken(usuario.username, listOf(roles))!!
     }
 }

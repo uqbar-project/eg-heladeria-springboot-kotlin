@@ -24,7 +24,7 @@ class JWTAuthorizationFilter : OncePerRequestFilter() {
       val bearerToken = request.getHeader("Authorization")
       if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
          try {
-            val token = bearerToken.replace("Bearer ", "")
+            val token = bearerToken.substringAfter("Bearer ")
             val usernamePAT = tokenUtils.getAuthentication(token)
             usuarioService.validarUsuario(usernamePAT.name)
             SecurityContextHolder.getContext().authentication = usernamePAT

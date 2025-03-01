@@ -33,8 +33,8 @@ class HeladeriaBootstrap(
     }
 
     fun initUsuarios() {
-        val admin = crearRolSiNoExiste("admin")
-        val readonly = crearRolSiNoExiste("readonly")
+        val admin = crearRolSiNoExiste(ROLES.ADMIN.name)
+        val readonly = crearRolSiNoExiste(ROLES.READONLY.name)
         crearUsuarioSiNoExiste("dodain", "1234", admin)
         crearUsuarioSiNoExiste("viotti", "elnico", admin)
         crearUsuarioSiNoExiste("phm", "phm", readonly)
