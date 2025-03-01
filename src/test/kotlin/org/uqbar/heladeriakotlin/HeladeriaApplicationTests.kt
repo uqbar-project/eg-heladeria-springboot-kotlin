@@ -429,4 +429,5 @@ class HeladeriaApplicationTests {
                 .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
     }
+    // endregion
 }
