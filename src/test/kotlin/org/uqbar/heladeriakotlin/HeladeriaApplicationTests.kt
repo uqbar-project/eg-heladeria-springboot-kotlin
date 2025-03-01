@@ -1,7 +1,5 @@
 package org.uqbar.heladeriakotlin
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -15,10 +13,18 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.uqbar.heladeriakotlin.dao.RepoUsuarios
-import org.uqbar.heladeriakotlin.dto.CredencialesDTO
-import org.uqbar.heladeriakotlin.model.*
+import org.uqbar.heladeriakotlin.model.Duenio
+import org.uqbar.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.model.ROLES
+import org.uqbar.heladeriakotlin.model.TipoHeladeria
 import org.uqbar.heladeriakotlin.security.TokenUtils
-import org.uqbar.utils.getHeladeriaBase
+import org.uqbar.utils.TestUtils.bodyUsuarioExistente
+import org.uqbar.utils.TestUtils.bodyUsuarioInexistente
+import org.uqbar.utils.TestUtils.bodyUsuarioPasswordIncorrecta
+import org.uqbar.utils.TestUtils.crearUsuario
+import org.uqbar.utils.TestUtils.getHeladeriaBase
+import org.uqbar.utils.TestUtils.tokenUsuarioInvalido
+
 import org.uqbar.utils.toJSON
 
 @SpringBootTest
@@ -27,13 +33,9 @@ import org.uqbar.utils.toJSON
 @DisplayName("Dado un controlador")
 class HeladeriaApplicationTests {
 
-    private val mapper = jacksonObjectMapper().apply {
-        registerModule(JavaTimeModule())
-    }
-    
     @Autowired
     lateinit var repoUsuarios: RepoUsuarios
-    
+
     @Autowired
     lateinit var mockMvc: MockMvc
 
@@ -47,8 +49,8 @@ class HeladeriaApplicationTests {
     @BeforeEach
     fun crearUsuarios() {
         repoUsuarios.deleteAll()
-        tokenUsuarioOk = crearUsuario("elComun1", "password1", ROLES.READONLY.name)
-        tokenAdminOk = crearUsuario("admin", "123456", ROLES.ADMIN.name)
+        tokenUsuarioOk = crearUsuario("elComun1", "password1", ROLES.READONLY.name, repoUsuarios, tokenUtils)
+        tokenAdminOk = crearUsuario("admin", "123456", ROLES.ADMIN.name, repoUsuarios, tokenUtils)
     }
 
     // region POST /login
@@ -426,26 +428,5 @@ class HeladeriaApplicationTests {
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
-    }
-    // endregion
-
-    // ****************************************** HELPERS **********************************************
-    private fun bodyUsuarioExistente() = mapper.writeValueAsString(CredencialesDTO("elComun1", "password1"))
-
-    private fun bodyUsuarioPasswordIncorrecta() = mapper.writeValueAsString(CredencialesDTO("elComun1", "password2"))
-
-    private fun bodyUsuarioInexistente() =
-        mapper.writeValueAsString(CredencialesDTO("usuarioInvalido", "cualquierPassword"))
-
-    private fun tokenUsuarioInvalido() =
-        "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsaXR1cmJlIiwiaWF0IjoxNjcwNTk0OTI5LCJleHAiOjE2NzE2NzQ5MjksInJvbGVzIjoiUk9MRV9VU0VSIn0.hSrd0sTw1OH57YlmV19xNCtide76AZa476XjPwE1uiW0wgbo7w5CarrJWCLjy0e62EZIbVjEGmIdHZ5tMHGkyg"
-
-    private fun crearUsuario(name: String, password: String, roles: String): String {
-        val usuario = Usuario().apply {
-            username = name
-            crearPassword(password)
-        }
-        repoUsuarios.save(usuario)
-        return "Bearer " + tokenUtils.createToken(usuario.username, listOf(roles))!!
     }
 }
