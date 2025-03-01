@@ -19,7 +19,7 @@ class TokenUtils {
    lateinit var secretKey: String
 
    @Value("\${security.access-token-minutes}")
-   var accessTokenMinutes: Int = 1
+   var accessTokenMinutes: Int = 30
 
    val logger = LoggerFactory.getLogger(TokenUtils::class.java)
 
