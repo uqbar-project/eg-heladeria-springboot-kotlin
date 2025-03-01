@@ -6,7 +6,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.uqbar.heladeriakotlin.errorHandling.BusinessException
 import org.uqbar.heladeriakotlin.errorHandling.CredencialesInvalidasException
 
 @Entity
@@ -18,8 +17,6 @@ class Rol(
     var id: Long? = null
     var name: String = ""
 }
-
-const val longitudMinimaPassword = 3
 
 @Entity
 @Table(name = "users")
@@ -53,18 +50,6 @@ class Usuario {
 
     fun agregarRol(rol: Rol) {
         roles.add(rol)
-    }
-
-    fun validar() {
-        if (username.trim().isBlank()) {
-            throw BusinessException("Debe ingresar nombre de usuario")
-        }
-        if (password.trim().isBlank()) {
-            throw BusinessException("Debe ingresar contraseña")
-        }
-        if (password.length < longitudMinimaPassword) {
-            throw BusinessException("La contraseña debe tener al menos $longitudMinimaPassword caracteres")
-        }
     }
 
     fun crearPassword(rawPassword: String) {
