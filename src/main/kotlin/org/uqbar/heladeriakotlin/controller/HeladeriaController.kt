@@ -3,13 +3,12 @@ package org.uqbar.heladeriakotlin.controller
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.uqbar.heladeriakotlin.dto.HeladeriaDTO
+import org.uqbar.heladeriakotlin.errorHandling.BusinessException
 import org.uqbar.heladeriakotlin.model.Duenio
 import org.uqbar.heladeriakotlin.model.Heladeria
 import org.uqbar.heladeriakotlin.service.DuenioService
 import org.uqbar.heladeriakotlin.service.HeladeriaService
-import org.uqbar.heladeriakotlin.service.UserException
 
-@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 @RestController
 class HeladeriaController {
 
@@ -45,8 +44,8 @@ class HeladeriaController {
         @RequestBody heladeria: Heladeria,
         @PathVariable heladeriaId: Long
     ): Heladeria {
-        if (heladeria.id === null) throw UserException("El id de la heladería no puede ser nulo")
-        if (heladeria.id != heladeriaId) throw UserException(
+        if (heladeria.id === null) throw BusinessException("El id de la heladería no puede ser nulo")
+        if (heladeria.id != heladeriaId) throw BusinessException(
             "El id recibido en el body no coincide con el id recibido en la URL"
         )
         return heladeriaService.actualizar(heladeriaId, heladeria)

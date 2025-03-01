@@ -1,27 +1,68 @@
 package org.uqbar.heladeriakotlin
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 import org.uqbar.heladeriakotlin.dao.RepoDuenio
 import org.uqbar.heladeriakotlin.dao.RepoHeladeria
-import org.uqbar.heladeriakotlin.model.Duenio
-import org.uqbar.heladeriakotlin.model.Heladeria
-import org.uqbar.heladeriakotlin.model.TipoHeladeria
+import org.uqbar.heladeriakotlin.dao.RepoRoles
+import org.uqbar.heladeriakotlin.dao.RepoUsuarios
+import org.uqbar.heladeriakotlin.model.*
 
 @Component
-class Bootstrap(
+class HeladeriaBootstrap(
     private val repoHeladeria: RepoHeladeria,
-    private val repoDuenio: RepoDuenio
+    private val repoDuenio: RepoDuenio,
+    private val repoUsuarios: RepoUsuarios,
+    private val repoRoles: RepoRoles
 ) : InitializingBean {
 
     val carlosMartinelli = Duenio("Carlos Martinelli")
     val oliviaHeladette = Duenio("Olivia Heladette")
     val manuelaFritzler = Duenio("Manuela Fritzler y Carlos Gorriti")
 
+    val logger: Logger = LoggerFactory.getLogger(HeladeriaBootstrap::class.java)
+
     override fun afterPropertiesSet() {
-        if (repoHeladeria.count() === 0L) {
+        if (repoHeladeria.count() == 0L) {
+            initUsuarios()
             initDuenios()
             initHeladerias()
+        }
+    }
+
+    fun initUsuarios() {
+        val admin = crearRolSiNoExiste(ROLES.ADMIN.name)
+        val readonly = crearRolSiNoExiste(ROLES.READONLY.name)
+        crearUsuarioSiNoExiste("dodain", "1234", admin)
+        crearUsuarioSiNoExiste("viotti", "elnico", admin)
+        crearUsuarioSiNoExiste("phm", "phm", readonly)
+    }
+
+    fun crearRolSiNoExiste(roleName: String): Rol {
+        val role = repoRoles.findByName(roleName)
+        if (role.isEmpty) {
+            logger.info("Creando rol $roleName")
+            return repoRoles.save(Rol().apply {
+                name = roleName
+            })
+        } else {
+            logger.info("Rol $roleName ya existe")
+            return role.get()
+        }
+    }
+
+    fun crearUsuarioSiNoExiste(user: String, password: String, role: Rol) {
+        if (repoUsuarios.findByUsername(user).isEmpty) {
+            logger.info("Creando usuario $user")
+            repoUsuarios.save(Usuario().apply {
+                username = user
+                crearPassword(password)
+                agregarRol(role)
+            })
+        } else {
+            logger.info("Usuario $user ya existe")
         }
     }
 

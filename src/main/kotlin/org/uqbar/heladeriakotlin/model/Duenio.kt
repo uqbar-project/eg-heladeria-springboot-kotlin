@@ -4,7 +4,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import org.uqbar.heladeriakotlin.service.UserException
+import org.uqbar.heladeriakotlin.errorHandling.BusinessException
 
 @Entity
 class Duenio(
@@ -16,7 +16,7 @@ class Duenio(
 
     fun validar() {
         if (nombreCompleto.trim().isEmpty()) {
-            throw UserException("El nombre de un dueño no puede estar vacio")
+            throw BusinessException("El nombre de un dueño no puede estar vacio")
         }
     }
 }

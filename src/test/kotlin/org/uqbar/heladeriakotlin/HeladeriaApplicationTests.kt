@@ -1,6 +1,7 @@
 package org.uqbar.heladeriakotlin
 
 import jakarta.transaction.Transactional
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,10 +12,19 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.uqbar.heladeriakotlin.dao.RepoUsuarios
 import org.uqbar.heladeriakotlin.model.Duenio
 import org.uqbar.heladeriakotlin.model.Heladeria
+import org.uqbar.heladeriakotlin.model.ROLES
 import org.uqbar.heladeriakotlin.model.TipoHeladeria
-import org.uqbar.utils.getHeladeriaBase
+import org.uqbar.heladeriakotlin.security.TokenUtils
+import org.uqbar.utils.TestUtils.bodyUsuarioExistente
+import org.uqbar.utils.TestUtils.bodyUsuarioInexistente
+import org.uqbar.utils.TestUtils.bodyUsuarioPasswordIncorrecta
+import org.uqbar.utils.TestUtils.crearUsuario
+import org.uqbar.utils.TestUtils.getHeladeriaBase
+import org.uqbar.utils.TestUtils.tokenUsuarioInvalido
+
 import org.uqbar.utils.toJSON
 
 @SpringBootTest
@@ -24,51 +34,176 @@ import org.uqbar.utils.toJSON
 class HeladeriaApplicationTests {
 
     @Autowired
+    lateinit var repoUsuarios: RepoUsuarios
+
+    @Autowired
     lateinit var mockMvc: MockMvc
 
+    @Autowired
+    lateinit var tokenUtils: TokenUtils
+
+    lateinit var tokenUsuarioOk: String
+
+    lateinit var tokenAdminOk: String
+
+    @BeforeEach
+    fun crearUsuarios() {
+        repoUsuarios.deleteAll()
+        tokenUsuarioOk = crearUsuario("elComun1", "password1", ROLES.READONLY.name, repoUsuarios, tokenUtils)
+        tokenAdminOk = crearUsuario("admin", "123456", ROLES.ADMIN.name, repoUsuarios, tokenUtils)
+    }
+
+    // region POST /login
     @Test
-    fun `Buscar una heladeria indicando parte del nombre`() {
-        mockMvc.perform(get("/heladerias/buscar").param("nombre", "tuc")).andExpect(status().isOk)
+    fun `usuario inexistente no pasa el login`() {
+        mockMvc.perform(
+            post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyUsuarioInexistente())
+        ).andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `usuario con password incorrecta no pasa el login`() {
+        mockMvc.perform(
+            post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyUsuarioPasswordIncorrecta())
+        ).andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `usuario existente pasa el login y retorna JWT`() {
+        mockMvc.perform(
+            post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyUsuarioExistente())
+        )
+            .andExpect(status().isOk)
+    }
+    // endregion
+
+    // region GET /heladerias/buscar
+    @Test
+    fun `Buscar una heladeria sin estar logueado da error de autorización`() {
+        mockMvc.perform(get("/heladerias/buscar").param("nombre", "tuc"))
+            .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `Buscar una heladeria con un token inválido da error de autorización`() {
+        mockMvc.perform(get("/heladerias/buscar")
+            .param("nombre", "tuc")
+            .header("Authorization", tokenUsuarioInvalido())
+        )
+            .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `Buscar una heladeria indicando parte del nombre con un usuario autenticado funciona ok`() {
+        mockMvc.perform(
+            get("/heladerias/buscar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", tokenUsuarioOk)
+                .param("nombre", "tuc")
+        ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$[0].nombre").value("Tucán"))
     }
 
     @Test
-    fun `Listar todas las heladerias si no se ingresa texto de busqueda`() {
-        mockMvc.perform(get("/heladerias/buscar")).andExpect(status().isOk)
+    fun `Listar todas las heladerias si no se ingresa texto de busqueda trae todas las heladerías`() {
+        mockMvc.perform(get("/heladerias/buscar")
+            .header("Authorization", tokenUsuarioOk)
+        ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(3))
     }
 
     @Test
     fun `Buscar una heladeria por nombre no encuentra ninguna que coincida`() {
-        mockMvc.perform(get("/heladerias/buscar").param("nombre", "inexistente")).andExpect(status().isOk)
+        mockMvc.perform(get("/heladerias/buscar")
+            .param("nombre", "inexistente")
+            .header("Authorization", tokenUsuarioOk)
+        ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(0))
+    }
+    // endregion
+
+    // region GET /heladerias/buscar/{id}
+    @Test
+    fun `Buscar una heladeria por id sin estar autenticado da error de autorización`() {
+        mockMvc.perform(
+            get("/heladerias/{id}", "1")
+        ).andExpect(status().isUnauthorized)
     }
 
     @Test
-    fun `Buscar una heladeria por id`() {
-        mockMvc.perform(get("/heladerias/{id}", "1")).andExpect(status().isOk)
+    fun `Buscar una heladeria por id con un usuario autenticado funciona correctamente`() {
+        mockMvc.perform(
+            get("/heladerias/{id}", "1")
+                .header("Authorization", tokenUsuarioOk)
+        ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.nombre").value("Tucán"))
     }
 
     @Test
     fun `Buscar una heladeria por id inexistente devuelve not found`() {
-        mockMvc.perform(get("/heladerias/{id}", "999")).andExpect(status().isNotFound)
+        mockMvc.perform(
+            get("/heladerias/{id}", "999")
+                .header("Authorization", tokenUsuarioOk)
+        ).andExpect(status().isNotFound)
+    }
+    // endregion
+
+    // region GET /duenios
+    @Test
+    fun `Listar todos los duenios sin estar autenticado devuelve un error de autorización`() {
+        mockMvc.perform(get("/duenios")).andExpect(status().isUnauthorized)
     }
 
     @Test
     fun `Listar todos los duenios`() {
-        mockMvc.perform(get("/duenios")).andExpect(status().isOk)
+        mockMvc.perform(
+            get("/duenios")
+                .header("Authorization", tokenUsuarioOk)
+        ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(3))
+    }
+    // endregion
+
+    // region POST /duenios
+    @Test
+    @Transactional
+    fun `Crear un nuevo duenio con un payload valido pero sin estar autenticado da error de autorización`() {
+        val body = mapOf("nombreCompleto" to "Fernando Dodino").toJSON()
+
+        mockMvc.perform(
+            post("/duenios")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isUnauthorized)
     }
 
     @Test
     @Transactional
-    fun `Crear un nuevo duenio con un payload valido`() {
+    fun `Crear un nuevo duenio con un payload valido pero con un usuario que no es admin da error de permisos`() {
         val body = mapOf("nombreCompleto" to "Fernando Dodino").toJSON()
 
         mockMvc.perform(
-            post("/duenios").contentType(MediaType.APPLICATION_JSON).content(body)
+            post("/duenios")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenUsuarioOk)
+        ).andExpect(status().isForbidden)
+    }
+
+    @Test
+    @Transactional
+    fun `Crear un nuevo duenio con un payload valido y un usuario admin funciona correctamente`() {
+        val body = mapOf("nombreCompleto" to "Fernando Dodino").toJSON()
+
+        mockMvc.perform(
+            post("/duenios")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.nombreCompleto").value("Fernando Dodino"))
     }
@@ -78,8 +213,38 @@ class HeladeriaApplicationTests {
         val body = mapOf("nombreCompleto" to "").toJSON()
 
         mockMvc.perform(
-            post("/duenios").contentType(MediaType.APPLICATION_JSON).content(body)
+            post("/duenios")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
+    }
+    // endregion
+
+    // region PUT /heladerias/{id}
+    @Test
+    @Transactional
+    fun `Actualizar una heladeria sin estar logueado da error de autorización`() {
+        val body = getHeladeriaBase().apply {
+            this.nombre = "nuevoNombre"
+        }.toJSON()
+
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+        ).andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    @Transactional
+    fun `Actualizar una heladeria con un usuario que no es admin da error de permisos`() {
+        val body = getHeladeriaBase().apply {
+            this.nombre = "nuevoNombre"
+        }.toJSON()
+
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenUsuarioOk)
+        ).andExpect(status().isForbidden)
     }
 
     @Test
@@ -90,7 +255,10 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
+
         ).andExpect(status().isBadRequest)
     }
 
@@ -104,7 +272,9 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", idURL).contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", idURL)
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
     }
 
@@ -115,19 +285,23 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
     }
 
     @Test
     @Transactional
-    fun `Actualizar el nombre de una heladeria`() {
+    fun `Actualizar el nombre de una heladeria correctamente`() {
         val body = getHeladeriaBase().apply {
             this.nombre = "nuevoNombre"
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.nombre").value("nuevoNombre"))
     }
@@ -140,7 +314,9 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.duenio.id").value(2L))
     }
@@ -153,7 +329,9 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
     }
 
@@ -165,7 +343,9 @@ class HeladeriaApplicationTests {
 
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}/", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}/", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isNotFound)
     }
 
@@ -177,7 +357,9 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.tipoHeladeria").value("INDUSTRIAL"))
     }
@@ -191,7 +373,9 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isOk).andExpect(jsonPath("$.gustos.nuevo").value(7))
     }
 
@@ -202,7 +386,9 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
     }
 
@@ -213,7 +399,9 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
     }
 
@@ -224,7 +412,9 @@ class HeladeriaApplicationTests {
         }.toJSON()
 
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
     }
 
@@ -234,8 +424,10 @@ class HeladeriaApplicationTests {
             this.gustos[""] = 5
         }.toJSON()
         mockMvc.perform(
-            put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
         ).andExpect(status().isBadRequest)
     }
-
+    // endregion
 }

@@ -3,6 +3,8 @@ package org.uqbar.heladeriakotlin.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.uqbar.heladeriakotlin.dao.RepoHeladeria
+import org.uqbar.heladeriakotlin.errorHandling.BusinessException
+import org.uqbar.heladeriakotlin.errorHandling.NotFoundException
 import org.uqbar.heladeriakotlin.model.Heladeria
 
 @Service
@@ -29,7 +31,7 @@ class HeladeriaService {
 
     fun actualizar(heladeriaId: Long, heladeriaRequest: Heladeria): Heladeria {
         val duenioId = heladeriaRequest.duenio.id
-        if (duenioId === null) throw UserException("El id del dueño no puede ser nulo")
+        if (duenioId === null) throw BusinessException("El id del dueño no puede ser nulo")
 
         findById(heladeriaId) // Si no existe tira una excepción
         heladeriaRequest.duenio = duenioService.findById(duenioId)
