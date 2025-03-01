@@ -3,6 +3,7 @@ package org.uqbar.heladeriakotlin.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.uqbar.heladeriakotlin.dao.RepoDuenio
+import org.uqbar.heladeriakotlin.errorHandling.NotFoundException
 import org.uqbar.heladeriakotlin.model.Duenio
 
 @Service
