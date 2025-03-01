@@ -18,6 +18,33 @@ Encontrarás:
 - las heladerías pueden ser artesanales, económicas o industriales, implementadas con un enum
 - hay además una relación many-to-one con su dueño
 
+## Antes de ejecutarlo
+
+Tenés que crearte manualmente un archivo `application-dev.yml` en el raíz del proyecto. Te dejamos un ejemplo:
+
+```yml
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://0.0.0.0:5432/heladeria?createDatabaseIfNotExist=true
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+security:
+  secret-key: <<escribí un hash sha2-256, character length 64, 256 bits>>
+  access-token-minutes: 300
+```
+
+Para generar un secret-key podés ir a [esta página](https://www.browserling.com/tools/sha2-hash) y seleccionar un Output Hash Size de 256.
+
 ## Módulo de Seguridad
 
 Esta aplicación utiliza Spring Security, de manera que cuando levanta la aplicación crea dos usuarios

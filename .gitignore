@@ -18,7 +18,7 @@ bin/
 !**/src/test/**/bin/
 
 ### Configuración ###
-
+application-dev.yml
 
 ### IntelliJ IDEA ###
 .idea
