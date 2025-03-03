@@ -61,5 +61,5 @@ class Usuario {
 }
 
 enum class ROLES(val roleName: String) {
-    ADMIN("admin"), READONLY("readonly")
+    ADMIN("ADMIN"), READONLY("READONLY")
 }

@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*
 import org.uqbar.heladeriakotlin.dao.RepoUsuarios
 import org.uqbar.heladeriakotlin.model.Duenio
 import org.uqbar.heladeriakotlin.model.Heladeria
@@ -60,6 +61,7 @@ class HeladeriaApplicationTests {
             post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bodyUsuarioInexistente())
+                .with(csrf())
         ).andExpect(status().isUnauthorized)
     }
 
@@ -69,6 +71,7 @@ class HeladeriaApplicationTests {
             post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bodyUsuarioPasswordIncorrecta())
+                .with(csrf())
         ).andExpect(status().isUnauthorized)
     }
 
@@ -78,6 +81,7 @@ class HeladeriaApplicationTests {
             post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bodyUsuarioExistente())
+                .with(csrf())
         )
             .andExpect(status().isOk)
     }
@@ -86,13 +90,13 @@ class HeladeriaApplicationTests {
     // region GET /heladerias/buscar
     @Test
     fun `Buscar una heladeria sin estar logueado da error de autorización`() {
-        mockMvc.perform(get("/heladerias/buscar").param("nombre", "tuc"))
+        mockMvc.perform(get("/heladerias/buscar").with(csrf()).param("nombre", "tuc"))
             .andExpect(status().isUnauthorized)
     }
 
     @Test
     fun `Buscar una heladeria con un token inválido da error de autorización`() {
-        mockMvc.perform(get("/heladerias/buscar")
+        mockMvc.perform(get("/heladerias/buscar").with(csrf())
             .param("nombre", "tuc")
             .header("Authorization", tokenUsuarioInvalido())
         )
@@ -106,6 +110,7 @@ class HeladeriaApplicationTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", tokenUsuarioOk)
                 .param("nombre", "tuc")
+                .with(csrf())
         ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$[0].nombre").value("Tucán"))
@@ -115,6 +120,7 @@ class HeladeriaApplicationTests {
     fun `Listar todas las heladerias si no se ingresa texto de busqueda trae todas las heladerías`() {
         mockMvc.perform(get("/heladerias/buscar")
             .header("Authorization", tokenUsuarioOk)
+            .with(csrf())
         ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(3))
     }
@@ -124,6 +130,7 @@ class HeladeriaApplicationTests {
         mockMvc.perform(get("/heladerias/buscar")
             .param("nombre", "inexistente")
             .header("Authorization", tokenUsuarioOk)
+            .with(csrf())
         ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(0))
     }
@@ -134,6 +141,7 @@ class HeladeriaApplicationTests {
     fun `Buscar una heladeria por id sin estar autenticado da error de autorización`() {
         mockMvc.perform(
             get("/heladerias/{id}", "1")
+            .with(csrf())
         ).andExpect(status().isUnauthorized)
     }
 
@@ -142,6 +150,7 @@ class HeladeriaApplicationTests {
         mockMvc.perform(
             get("/heladerias/{id}", "1")
                 .header("Authorization", tokenUsuarioOk)
+                .with(csrf())
         ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.nombre").value("Tucán"))
     }
@@ -151,6 +160,7 @@ class HeladeriaApplicationTests {
         mockMvc.perform(
             get("/heladerias/{id}", "999")
                 .header("Authorization", tokenUsuarioOk)
+                .with(csrf())
         ).andExpect(status().isNotFound)
     }
     // endregion
@@ -158,7 +168,7 @@ class HeladeriaApplicationTests {
     // region GET /duenios
     @Test
     fun `Listar todos los duenios sin estar autenticado devuelve un error de autorización`() {
-        mockMvc.perform(get("/duenios")).andExpect(status().isUnauthorized)
+        mockMvc.perform(get("/duenios").with(csrf())).andExpect(status().isUnauthorized)
     }
 
     @Test
@@ -166,6 +176,7 @@ class HeladeriaApplicationTests {
         mockMvc.perform(
             get("/duenios")
                 .header("Authorization", tokenUsuarioOk)
+                .with(csrf())
         ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andExpect(jsonPath("$.length()").value(3))
     }
@@ -180,6 +191,7 @@ class HeladeriaApplicationTests {
         mockMvc.perform(
             post("/duenios")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
+                .with(csrf())
         ).andExpect(status().isUnauthorized)
     }
 
@@ -192,6 +204,7 @@ class HeladeriaApplicationTests {
             post("/duenios")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenUsuarioOk)
+                .with(csrf())
         ).andExpect(status().isForbidden)
     }
 
@@ -204,6 +217,7 @@ class HeladeriaApplicationTests {
             post("/duenios")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.nombreCompleto").value("Fernando Dodino"))
     }
@@ -216,6 +230,7 @@ class HeladeriaApplicationTests {
             post("/duenios")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isBadRequest)
     }
     // endregion
@@ -230,6 +245,7 @@ class HeladeriaApplicationTests {
 
         mockMvc.perform(
             put("/heladerias/{heladeriaId}", "1").contentType(MediaType.APPLICATION_JSON).content(body)
+            .with(csrf())
         ).andExpect(status().isUnauthorized)
     }
 
@@ -244,6 +260,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenUsuarioOk)
+                .with(csrf())
         ).andExpect(status().isForbidden)
     }
 
@@ -258,6 +275,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
 
         ).andExpect(status().isBadRequest)
     }
@@ -275,6 +293,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", idURL)
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isBadRequest)
     }
 
@@ -288,6 +307,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isBadRequest)
     }
 
@@ -302,6 +322,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.nombre").value("nuevoNombre"))
     }
@@ -317,6 +338,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.duenio.id").value(2L))
     }
@@ -332,6 +354,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isBadRequest)
     }
 
@@ -346,6 +369,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}/", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isNotFound)
     }
 
@@ -360,6 +384,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isOk).andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.tipoHeladeria").value("INDUSTRIAL"))
     }
@@ -376,6 +401,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isOk).andExpect(jsonPath("$.gustos.nuevo").value(7))
     }
 
@@ -389,6 +415,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isBadRequest)
     }
 
@@ -402,6 +429,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isBadRequest)
     }
 
@@ -415,6 +443,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isBadRequest)
     }
 
@@ -427,6 +456,7 @@ class HeladeriaApplicationTests {
             put("/heladerias/{heladeriaId}", "1")
                 .contentType(MediaType.APPLICATION_JSON).content(body)
                 .header("Authorization", tokenAdminOk)
+                .with(csrf())
         ).andExpect(status().isBadRequest)
     }
     // endregion

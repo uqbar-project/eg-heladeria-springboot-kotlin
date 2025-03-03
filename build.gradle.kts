@@ -47,6 +47,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
     // testing
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.h2database:h2:2.3.232")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.google.code.gson:gson:2.12.1")
