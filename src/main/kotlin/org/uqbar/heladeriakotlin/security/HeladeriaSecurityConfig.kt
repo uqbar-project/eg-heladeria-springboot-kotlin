@@ -82,7 +82,7 @@ class HeladeriaSecurityConfig {
                 registry.addMapping("/**")
                     .allowedOrigins("http://localhost:5173")
                     .allowedHeaders("*")
-                    .allowedMethods("POST", "OPTIONS", "GET", "PUT", "DELETE")
+                    .allowedMethods("POST", "GET", "PUT", "DELETE")
                     .allowCredentials(true)
             }
         }

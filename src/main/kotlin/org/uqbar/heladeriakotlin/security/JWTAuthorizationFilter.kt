@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import org.uqbar.heladeriakotlin.errorHandling.CredencialesInvalidasException
+import org.uqbar.heladeriakotlin.errorHandling.TokenExpiradoException
 import org.uqbar.heladeriakotlin.service.UsuarioService
 
 @Component
@@ -28,7 +28,7 @@ class JWTAuthorizationFilter : OncePerRequestFilter() {
             usuarioService.validarUsuario(usernamePAT.name)
             SecurityContextHolder.getContext().authentication = usernamePAT
             logger.info("username PAT: $usernamePAT")
-         } catch (e: CredencialesInvalidasException) {
+         } catch (e: TokenExpiradoException) {
             response.status = 498 // Invalid Token (ESRI)
             // Returned by ArcGIS for Server. Code 498 indicates an expired or otherwise invalid token
          }
