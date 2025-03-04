@@ -4,15 +4,22 @@
   "items": [
     {
       "type": "http",
-      "name": "Ver heladerias",
-      "seq": 2,
+      "name": "Actualizar una heladería",
+      "seq": 6,
       "request": {
-        "url": "{{baseUrl}}/heladerias/buscar",
-        "method": "GET",
-        "headers": [],
+        "url": "{{baseUrl}}/heladerias/1",
+        "method": "PUT",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "enabled": true
+          }
+        ],
         "params": [],
         "body": {
-          "mode": "none",
+          "mode": "json",
+          "json": "{\n  \"id\": 1,\n  \"tipoHeladeria\": \"ARTESANAL\",\n  \"nombre\": \"Tresceve\",\n  \"duenio\": {\n    \"id\": 1,\n    \"nombreCompleto\": \"Pepito\"\n  },\n  \"gustos\": {\n    \"kinotos al whisky\": 3 \n  }\n}",
           "formUrlEncoded": [],
           "multipartForm": []
         },
@@ -28,12 +35,54 @@
     },
     {
       "type": "http",
-      "name": "Ver una heladería",
-      "seq": 3,
+      "name": "Crear persona dueña de una heladería",
+      "seq": 5,
       "request": {
-        "url": "{{baseUrl}}/heladerias/1",
+        "url": "{{baseUrl}}/duenios",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json",
+            "enabled": true
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "enabled": true
+          }
+        ],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"nombreCompleto\": \"Rita Kold\"\n}",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {},
+        "assertions": [],
+        "tests": "",
+        "docs": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "Ver heladerias",
+      "seq": 2,
+      "request": {
+        "url": "{{baseUrl}}/heladerias/buscar",
         "method": "GET",
-        "headers": [],
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "enabled": true
+          }
+        ],
         "params": [],
         "body": {
           "mode": "none",
@@ -57,7 +106,13 @@
       "request": {
         "url": "{{baseUrl}}/duenios",
         "method": "GET",
-        "headers": [],
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "enabled": true
+          }
+        ],
         "params": [],
         "body": {
           "mode": "none",
@@ -76,16 +131,21 @@
     },
     {
       "type": "http",
-      "name": "Crear persona dueña de una heladería",
-      "seq": 5,
+      "name": "Ver una heladería",
+      "seq": 3,
       "request": {
-        "url": "{{baseUrl}}/duenios",
-        "method": "POST",
-        "headers": [],
+        "url": "{{baseUrl}}/heladerias/1",
+        "method": "GET",
+        "headers": [
+          {
+            "name": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "enabled": true
+          }
+        ],
         "params": [],
         "body": {
-          "mode": "json",
-          "json": "{\n  \"nombreCompleto\": \"Frigida Kold\"\n}",
+          "mode": "none",
           "formUrlEncoded": [],
           "multipartForm": []
         },
@@ -101,21 +161,64 @@
     },
     {
       "type": "http",
-      "name": "Actualizar una heladería",
-      "seq": 6,
+      "name": "Login Admin",
+      "seq": 7,
       "request": {
-        "url": "{{baseUrl}}/heladerias/1",
-        "method": "PUT",
+        "url": "{{baseUrl}}/login",
+        "method": "POST",
         "headers": [],
         "params": [],
         "body": {
           "mode": "json",
-          "json": "{\n  \"tipoHeladeria\": \"ARTESANAL\",\n  \"nombre\": \"Tresceve\",\n  \"duenio\": {\n    \"id\": 1\n  }\n}",
+          "json": "{\n  \"usuario\": \"dodain\",\n  \"password\": \"1234\"\n}",
           "formUrlEncoded": [],
           "multipartForm": []
         },
         "script": {},
-        "vars": {},
+        "vars": {
+          "res": [
+            {
+              "name": "access_token",
+              "value": "res.body",
+              "enabled": true,
+              "local": false
+            }
+          ]
+        },
+        "assertions": [],
+        "tests": "",
+        "docs": "",
+        "auth": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "type": "http",
+      "name": "Login Usr común",
+      "seq": 8,
+      "request": {
+        "url": "{{baseUrl}}/login",
+        "method": "POST",
+        "headers": [],
+        "params": [],
+        "body": {
+          "mode": "json",
+          "json": "{\n  \"usuario\": \"phm\",\n  \"password\": \"phm\"\n}",
+          "formUrlEncoded": [],
+          "multipartForm": []
+        },
+        "script": {},
+        "vars": {
+          "res": [
+            {
+              "name": "access_token",
+              "value": "res.body",
+              "enabled": true,
+              "local": false
+            }
+          ]
+        },
         "assertions": [],
         "tests": "",
         "docs": "",
@@ -135,7 +238,7 @@
             "value": "http://localhost:8080",
             "enabled": true,
             "local": false,
-            "uid": "N30LOjJ49olhjNI94CSmp"
+            "uid": "WwyXB9r56b8YNIliOaOOd"
           }
         ]
       }
