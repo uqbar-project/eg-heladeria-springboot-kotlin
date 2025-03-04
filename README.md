@@ -43,7 +43,7 @@ security:
   access-token-minutes: 300
 ```
 
-Para generar un secret-key podés ir a [esta página](https://www.browserling.com/tools/sha2-hash) y seleccionar un Output Hash Size de 256.
+Para generar un secret-key podés ir a [esta página](https://www.browserling.com/tools/sha2-hash) y seleccionar un Output Hash Size de 512 bytes.
 
 ## Módulo de Seguridad
 
