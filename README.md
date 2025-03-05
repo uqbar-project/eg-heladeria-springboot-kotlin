@@ -224,17 +224,15 @@ class JWTAuthorizationFilter : OncePerRequestFilter() {
                 usuarioService.validarUsuario(usernamePAT.name)
                 SecurityContextHolder.getContext().authentication = usernamePAT
                 logger.info("username PAT: $usernamePAT")
-
             }
-        } catch (e: TokenExpiradoException) {
-            // Se captura la excepción para que el flujo de filtros continúe.
-            // El mecanismo predeterminado de Spring Security se encargará de devolver un 401 (Unauthorized).
-            logger.warn(e.message)
-        } finally {
             filterChain.doFilter(request, response)
+        } catch (e: TokenExpiradoException) {
+            // Captura la excepción de token expirado y devuelve el status code adecuado (401-Unauthorized)
+            logger.warn(e.message)
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
+            return
         }
     }
-
 }
 ```
 
@@ -242,7 +240,7 @@ Fíjense que aquí aprovechamos el header con la autorización que enviamos y
 
 - buscamos que el usuario exista (solo eso, el token pertenece a un usuario pero no tiene contraseña)
 - lo asignamos al contexto para definir a partir de aquí que se trata de un usuario autenticado
-- en el caso de que el token se venció atrapamos la excepción para que pueda continuar el flujo de filtros y así Spring devolver el status code adecuado (401-Unauthorized)
+- en el caso de que el token se venció atrapamos la excepción y enviamos el status code adecuado (401-Unauthorized)
 
 Podés investigar el archivo [TokenUtils](./src/main/kotlin/org/uqbar/heladeriakotlin/security/TokenUtils.kt) para que veas cómo se crea el token y como se obtiene la información del usuario en base al token.
 
