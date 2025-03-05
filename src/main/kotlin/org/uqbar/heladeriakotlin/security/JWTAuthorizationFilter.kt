@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -32,15 +33,13 @@ class JWTAuthorizationFilter : OncePerRequestFilter() {
                 usuarioService.validarUsuario(usernamePAT.name)
                 SecurityContextHolder.getContext().authentication = usernamePAT
                 logger.info("username PAT: $usernamePAT")
-
             }
-        } catch (e: TokenExpiradoException) {
-            // Se captura la excepción para que el flujo de filtros continúe.
-            // El mecanismo predeterminado de Spring Security se encargará de devolver un 401 (Unauthorized).
-            logger.warn(e.message)
-        } finally {
             filterChain.doFilter(request, response)
+        } catch (e: TokenExpiradoException) {
+            // Captura la excepción de token expirado y devuelve el status code adecuado (401-Unauthorized)
+            logger.warn(e.message)
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
+            return
         }
     }
-
 }
