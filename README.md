@@ -204,24 +204,37 @@ fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
 ```kotlin
 @Component
 class JWTAuthorizationFilter : OncePerRequestFilter() {
-   ...
-    
-   override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-      val bearerToken = request.getHeader("Authorization")
-      if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-         try {
-            val token = bearerToken.substringAfter("Bearer ")
-            val usernamePAT = tokenUtils.getAuthentication(token)
-            usuarioService.validarUsuario(usernamePAT.name)
-            SecurityContextHolder.getContext().authentication = usernamePAT
-            logger.info("username PAT: $usernamePAT")
-         } catch (e: TokenExpiradoException) {
-            response.status = 498 // Invalid Token (ESRI)
-            // Returned by ArcGIS for Server. Code 498 indicates an expired or otherwise invalid token
-         }
-      }
-      filterChain.doFilter(request, response)
-   }
+
+    @Autowired
+    lateinit var tokenUtils: TokenUtils
+
+    @Autowired
+    lateinit var usuarioService: UsuarioService
+
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        try {
+            val bearerToken = request.getHeader("Authorization")
+            if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+                val token = bearerToken.substringAfter("Bearer ")
+                val usernamePAT = tokenUtils.getAuthentication(token)
+                usuarioService.validarUsuario(usernamePAT.name)
+                SecurityContextHolder.getContext().authentication = usernamePAT
+                logger.info("username PAT: $usernamePAT")
+
+            }
+        } catch (e: TokenExpiradoException) {
+            // Se captura la excepción para que el flujo de filtros continúe.
+            // El mecanismo predeterminado de Spring Security se encargará de devolver un 401 (Unauthorized).
+            logger.warn(e.message)
+        } finally {
+            filterChain.doFilter(request, response)
+        }
+    }
+
 }
 ```
 
@@ -229,7 +242,7 @@ Fíjense que aquí aprovechamos el header con la autorización que enviamos y
 
 - buscamos que el usuario exista (solo eso, el token pertenece a un usuario pero no tiene contraseña)
 - lo asignamos al contexto para definir a partir de aquí que se trata de un usuario autenticado
-- en el caso de que el token se venció devolvemos un código http 498 específico (para facilitar el trabajo del frontend, y que no le llegue un 500 o un 401, las credenciales son inválidas)
+- en el caso de que el token se venció atrapamos la excepción para que pueda continuar el flujo de filtros y así Spring devolver el status code adecuado (401-Unauthorized)
 
 Podés investigar el archivo [TokenUtils](./src/main/kotlin/org/uqbar/heladeriakotlin/security/TokenUtils.kt) para que veas cómo se crea el token y como se obtiene la información del usuario en base al token.
 
