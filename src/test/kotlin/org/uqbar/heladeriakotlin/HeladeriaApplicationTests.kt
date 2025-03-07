@@ -210,6 +210,19 @@ class HeladeriaApplicationTests {
 
     @Test
     @Transactional
+    fun `Crear un nuevo duenio con un payload valido y un usuario admin pero con un token CSRF invalido da error`() {
+        val body = mapOf("nombreCompleto" to "Fernando Dodino").toJSON()
+
+        mockMvc.perform(
+            post("/duenios")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
+                .with(csrf().useInvalidToken())
+        ).andExpect(status().isForbidden)
+    }
+
+    @Test
+    @Transactional
     fun `Crear un nuevo duenio con un payload valido y un usuario admin funciona correctamente`() {
         val body = mapOf("nombreCompleto" to "Fernando Dodino").toJSON()
 
@@ -309,6 +322,21 @@ class HeladeriaApplicationTests {
                 .header("Authorization", tokenAdminOk)
                 .with(csrf())
         ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @Transactional
+    fun `Actualizar el nombre de una heladeria con datos correctos pero sin un token CSRF da error`() {
+        val body = getHeladeriaBase().apply {
+            this.nombre = "nuevoNombre"
+        }.toJSON()
+
+        mockMvc.perform(
+            put("/heladerias/{heladeriaId}", "1")
+                .contentType(MediaType.APPLICATION_JSON).content(body)
+                .header("Authorization", tokenAdminOk)
+                .with(csrf().useInvalidToken())
+        ).andExpect(status().isForbidden)
     }
 
     @Test
