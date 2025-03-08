@@ -39,7 +39,6 @@ class JWTAuthorizationFilter : OncePerRequestFilter() {
             // Captura la excepción de token expirado y devuelve el status code adecuado (401-Unauthorized)
             logger.warn(e.message)
             response.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
-            return
         }
     }
 }
