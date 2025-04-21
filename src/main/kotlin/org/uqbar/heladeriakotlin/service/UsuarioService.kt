@@ -21,7 +21,7 @@ class UsuarioService : UserDetailsService {
    @Autowired
    lateinit var tokenUtils: TokenUtils
 
-   @Transactional(Transactional.TxType.REQUIRED)
+   @Transactional(Transactional.TxType.NEVER)
    fun login(credencialesDTO: CredencialesDTO): String {
       val usuario = validarUsuario(credencialesDTO.usuario)
       usuario.validarCredenciales(credencialesDTO.password)

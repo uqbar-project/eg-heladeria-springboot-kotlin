@@ -5,11 +5,10 @@
 
 Este ejemplo está implementado con Kotlin y Spring Boot, se recomienda acompañarlo con el frontend desarrollado en [React](https://github.com/uqbar-project/eg-heladeria-react-phm).
 
-Además necesitarás tener levantada una base de datos MySQL con un esquema llamado `heladeria`
+Además necesitarás tener levantada una base de datos postgresql con un esquema llamado `heladeria`, que hay que levantar de esta manera:
 
-```sql
-drop schema if exists heladeria;
-create schema if not exists heladeria;
+```bash
+docker compose up
 ```
 
 Encontrarás:
