@@ -1,9 +1,9 @@
 plugins {
-    id("org.springframework.boot") version "3.4.2"
+    id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "1.9.25"
-    kotlin("plugin.spring") version "1.9.25"
-    kotlin("plugin.jpa") version "1.9.25"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.spring") version "2.3.0"
+    kotlin("plugin.jpa") version "2.3.0"
     jacoco
 }
 
@@ -14,6 +14,21 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+kotlin {
+    jvmToolchain(21)
+
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            "-Xjsr305=strict",
+        )
+    }
+}
+
+tasks.withType<JavaCompile> {
+    targetCompatibility = "21"
+    sourceCompatibility = "21"
 }
 
 repositories {
@@ -34,23 +49,24 @@ dependencies {
     // conexión a la base de datos
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    // migraciones
-    val flywayVersion = "11.3.1"
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
-    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+    // migraciones: Flyway viene por defecto con Springboot 3.5
+//    val flywayVersion = "12.0.0"
+//    implementation("org.flywaydb:flyway-core:$flywayVersion")
+//    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
 
     // seguridad y autenticación
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
-    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.83")
+    val jwtVersion = "0.13.0"
+    implementation("io.jsonwebtoken:jjwt-api:$jwtVersion")
+    implementation("io.jsonwebtoken:jjwt-impl:$jwtVersion")
+    implementation("io.jsonwebtoken:jjwt-jackson:$jwtVersion")
 
     // testing
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("com.h2database:h2:2.3.232")
+    testImplementation("com.h2database:h2:2.4.240")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.google.code.gson:gson:2.12.1")
+    testImplementation("com.google.code.gson:gson:2.13.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -67,7 +83,7 @@ tasks.jacocoTestReport {
 }
 
 jacoco {
-    toolVersion = "0.8.12"
+    toolVersion = "0.8.14"
 }
 
 tasks.jacocoTestReport {
