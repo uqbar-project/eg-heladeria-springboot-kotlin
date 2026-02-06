@@ -100,9 +100,3 @@ tasks.jacocoTestReport {
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
 }
-
-tasks.register("runOnGitHub") {
-    dependsOn("jacocoTestReport")
-    group = "custom"
-    description = "$ ./gradlew runOnGitHub # runs on GitHub Action"
-}
