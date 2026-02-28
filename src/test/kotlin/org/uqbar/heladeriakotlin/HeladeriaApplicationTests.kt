@@ -90,7 +90,9 @@ class HeladeriaApplicationTests {
             .andExpect(jsonPath("$.accessToken").exists())
             .andExpect(jsonPath("$.refreshToken").exists())
     }
+    // endregion
 
+    // region POST /refresh
     @Test
     fun `refresh token valido genera nuevo par de tokens`() {
         // Primero hacemos login para obtener un refresh token
