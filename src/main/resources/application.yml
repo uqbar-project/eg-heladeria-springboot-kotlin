@@ -13,3 +13,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+security:
+  secret-key: ${JWT_SECRET_KEY:defaultSecretKeyForDevelopmentEnvironmentOnlyDoNotUseInProduction}
+  access-token-minutes: 30
+  refresh-token-days: 7

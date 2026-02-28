@@ -1,1 +1,1 @@
-rootProject.name = "heladeria-kotlin"
+rootProject.name = "eg-heladeria-springboot-kotlin"

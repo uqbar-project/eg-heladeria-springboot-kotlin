@@ -284,3 +284,20 @@ Repasando la configuración que definimos anteriormente:
 - el login no debe exigir token, por más que se trate de un POST
 - las implementaciones que nosotros dejamos en el ejemplo son las recomendadas para Spring Security 6, donde a partir de esta versión se genera un token nuevo con cada request (para evitar la posibilidad de que se robe y reutilice)
 
+## Refresh Token
+
+Cuando el token normal expira, el usuario tiene un endpoint específico para renovarlo. Para eso le tiene que pasar un refresh token:
+
+- `POST /refresh?refreshToken=<token>`
+
+El endpoint termina delegando en las clases UsuarioServic
+
+- **TokenService**: de alto nivel, orquesta la rotación de tokens, habla con el repository y conoce al RefeshToken que se debe persistir en la base (ver más abajo)
+- **TokenUtils**: solo crea y valida JWTs, hace operaciones criptográficas puras.
+
+### Por qué guardar refresh tokens en la base de datos
+
+- **Revocación**: Permite invalidar tokens específicos (logout) o todos los tokens de un usuario (cambio de contraseña)
+- **Rotación**: Cada vez que se usa un refresh token, se genera uno nuevo y se invalida el anterior (mejora seguridad)
+- **Control**: Evita reutilización de tokens comprometidos y permite auditoría de sesiones activas
+

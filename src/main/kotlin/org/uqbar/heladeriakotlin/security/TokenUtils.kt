@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import org.uqbar.heladeriakotlin.errorHandling.CredencialesInvalidasException
 import org.uqbar.heladeriakotlin.errorHandling.TokenExpiradoException
+import java.security.SecureRandom
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
@@ -21,6 +22,9 @@ class TokenUtils {
 
    @Value("\${security.access-token-minutes}")
    var accessTokenMinutes: Int = 30
+
+   @Value("\${security.refresh-token-days}")
+   var refreshTokenDays: Int = 7
 
    val logger: Logger = LoggerFactory.getLogger(TokenUtils::class.java)
 
@@ -37,6 +41,15 @@ class TokenUtils {
          .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()))
          .compact()
    }
+
+   fun generateRefreshToken(): String {
+      val secureRandom = SecureRandom()
+      val bytes = ByteArray(32)
+      secureRandom.nextBytes(bytes)
+      return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes)
+   }
+
+   fun getRefreshTokenExpirationDays(): Int = refreshTokenDays
 
    fun getAuthentication(token: String): UsernamePasswordAuthenticationToken {
       try {
