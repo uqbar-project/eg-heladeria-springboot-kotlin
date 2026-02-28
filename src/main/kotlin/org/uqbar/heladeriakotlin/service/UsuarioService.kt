@@ -59,20 +59,6 @@ class UsuarioService : UserDetailsService {
       return generateTokenPair(refreshToken.username, usuario.roles.map { it.name })
    }
 
-   fun revokeRefreshToken(token: String) {
-      refreshTokenRepository.findByToken(token).ifPresent { refreshToken ->
-         refreshToken.revoked = true
-         refreshTokenRepository.save(refreshToken)
-      }
-   }
-
-   fun revokeAllUserTokens(username: String) {
-      refreshTokenRepository.findByUsername(username).forEach { token ->
-         token.revoked = true
-         refreshTokenRepository.save(token)
-      }
-   }
-
    private fun createRefreshToken(username: String): String {
       val tokenString = tokenUtils.generateRefreshToken()
       val expirationDays = tokenUtils.getRefreshTokenExpirationDays()
