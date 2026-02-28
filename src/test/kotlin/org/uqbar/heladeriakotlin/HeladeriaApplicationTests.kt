@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*
+import org.hamcrest.CoreMatchers.not
+import org.hamcrest.CoreMatchers.equalTo
 import org.uqbar.heladeriakotlin.dao.RepoUsuarios
 import org.uqbar.heladeriakotlin.model.Duenio
 import org.uqbar.heladeriakotlin.model.Heladeria
@@ -76,7 +78,7 @@ class HeladeriaApplicationTests {
     }
 
     @Test
-    fun `usuario existente pasa el login y retorna JWT`() {
+    fun `usuario existente pasa el login y retorna TokenResponseDTO`() {
         mockMvc.perform(
             post("/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -84,6 +86,60 @@ class HeladeriaApplicationTests {
                 .with(csrf())
         )
             .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.accessToken").exists())
+            .andExpect(jsonPath("$.refreshToken").exists())
+    }
+    // endregion
+
+    // region POST /refresh
+    @Test
+    fun `refresh token valido genera nuevo par de tokens`() {
+        // Primero hacemos login para obtener un refresh token
+        val loginResponse = mockMvc.perform(
+            post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyUsuarioExistente())
+                .with(csrf())
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+            .response
+            .contentAsString
+
+        val refreshToken = org.json.JSONObject(loginResponse).getString("refreshToken")
+
+        // Ahora usamos el refresh token
+        mockMvc.perform(
+            post("/refresh")
+                .param("refreshToken", refreshToken)
+                .with(csrf())
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.accessToken").exists())
+            .andExpect(jsonPath("$.refreshToken").exists())
+            .andExpect(jsonPath("$.refreshToken").isNotEmpty())
+            .andExpect(jsonPath("$.refreshToken").value(not(equalTo(refreshToken)))) // Debe ser un nuevo token
+    }
+
+    @Test
+    fun `refresh token invalido devuelve unauthorized`() {
+        mockMvc.perform(
+            post("/refresh")
+                .param("refreshToken", "token-invalido")
+                .with(csrf())
+        )
+            .andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    fun `refresh token sin parametro devuelve bad request`() {
+        mockMvc.perform(
+            post("/refresh")
+                .with(csrf())
+        )
+            .andExpect(status().isBadRequest)
     }
     // endregion
 
