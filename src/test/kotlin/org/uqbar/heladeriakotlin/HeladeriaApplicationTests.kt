@@ -141,6 +141,39 @@ class HeladeriaApplicationTests {
         )
             .andExpect(status().isBadRequest)
     }
+
+    @Test
+    fun `refresh token usado dos veces falla la segunda vez por rotacion`() {
+        // Login para obtener refresh token
+        val loginResponse = mockMvc.perform(
+            post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyUsuarioExistente())
+                .with(csrf())
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+            .response
+            .contentAsString
+
+        val refreshToken = org.json.JSONObject(loginResponse).getString("refreshToken")
+
+        // Primer refresh - debería funcionar
+        mockMvc.perform(
+            post("/refresh")
+                .param("refreshToken", refreshToken)
+                .with(csrf())
+        )
+            .andExpect(status().isOk)
+
+        // Segundo refresh con el mismo token - debería fallar (token revocado)
+        mockMvc.perform(
+            post("/refresh")
+                .param("refreshToken", refreshToken)
+                .with(csrf())
+        )
+            .andExpect(status().isUnauthorized)
+    }
     // endregion
 
     // region GET /heladerias/buscar
