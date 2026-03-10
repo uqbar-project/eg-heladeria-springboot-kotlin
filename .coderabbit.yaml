@@ -1,0 +1,159 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# =============================================================================
+# CodeRabbit - Configuración para eg-heladeria-springboot-kotlin
+# Proyecto educativo de uqbar-project (UNSAM)
+# =============================================================================
+
+language: 'es-AR'
+
+early_access: false
+
+tone_instructions: >
+  Repo educativo (UNSAM/Uqbar) preparado por docentes como referencia
+  para alumnos de Spring Boot y Kotlin. Feedback directo y técnico.
+  Priorizá claridad pedagógica, seguridad (JWT/CORS/CSRF) y buenas
+  prácticas. Evitá nitpicks de estilo.
+
+reviews:
+  # Perfil "assertive" porque los contributors son docentes con experiencia
+  # y el código debe ser ejemplar como material de referencia
+  profile: 'assertive'
+
+  # Auto-aprobar el PR cuando los comentarios de CodeRabbit estén resueltos
+  # y no haya pre-merge checks fallando. En false, no auto-aprueba nunca.
+  request_changes_workflow: false
+
+  # Resumen de alto nivel del PR (útil para tener una vista rápida del cambio)
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+
+  # Desactivar el poema (no aporta en contexto educativo)
+  poem: false
+
+  # Mostrar estado del review como commit status check
+  review_status: true
+  commit_status: true
+  fail_commit_status: false
+
+  # Colapsar el walkthrough para no abrumar el PR con texto
+  collapse_walkthrough: true
+  changed_files_summary: true
+
+  # Estimación de esfuerzo de review (informativo)
+  estimate_code_review_effort: true
+
+  # Diagramas de secuencia desactivados (overkill para PRs chicos)
+  sequence_diagrams: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+    # Solo revisa el delta cuando se pushean commits nuevos a un PR abierto
+    auto_incremental_review: true
+    # Pausa después de 3 commits para no spamear reviews ni quemar rate limits
+    auto_pause_after_reviewed_commits: 3
+    # Ignorar PRs con estos keywords en el título
+    ignore_title_keywords:
+      - 'WIP'
+      - 'Draft'
+
+  # Instrucciones específicas por path
+  path_instructions:
+    - path: 'src/main/kotlin/**/security/**'
+      instructions: >
+        Este directorio contiene la configuración de seguridad del proyecto
+        (JWT, CORS, CSRF, Spring Security). Prestá especial atención a:
+        - Secretos hardcodeados o configuraciones inseguras
+        - Manejo correcto de tokens JWT (expiración, validación)
+        - Configuración CORS adecuada (no dejar wildcards en producción)
+        - Manejo apropiado de excepciones de autenticación
+
+    - path: 'src/main/kotlin/**/controller/**'
+      instructions: >
+        Verificá que los controllers sigan buenas prácticas REST:
+        - Uso correcto de HTTP methods y status codes
+        - Manejo de errores con respuestas apropiadas
+        - No incluir lógica de negocio en el controller
+        - Validación de inputs
+
+    - path: 'src/main/kotlin/**/*.kt'
+      instructions: >
+        Revisá con foco en:
+        - Correctitud del código Kotlin y null-safety
+        - Uso idiomático de Kotlin y legibilidad
+        - Responsabilidades claras entre controller, service y domain
+        - Evitar sugerencias puramente estilísticas si no aportan claridad
+
+    - path: 'src/test/**'
+      instructions: >
+        Los tests son parte del material de referencia para los alumnos.
+        Revisá que sean claros y ejemplares:
+        - Nombres descriptivos que expliquen el escenario testeado
+        - Cobertura de casos felices y de error
+        - Uso correcto de las anotaciones de Spring Boot Test
+        - Que sirvan como ejemplo de cómo testear cada capa
+        - Evitar tests frágiles o demasiado acoplados a detalles internos
+
+    - path: 'src/main/kotlin/**/model/**'
+      instructions: >
+        Revisá el modelo de dominio:
+        - Uso correcto de anotaciones JPA (@Entity, @ManyToOne, etc.)
+        - Que las relaciones estén bien mapeadas
+        - Que no haya problemas de serialización circular (Jackson)
+
+    - path: 'Docker*'
+      instructions: >
+        Verificá buenas prácticas de Docker:
+        - Multi-stage builds cuando aplique
+        - No exponer secretos en el Dockerfile
+        - Uso de imágenes base oficiales y versionadas
+        - Tamaño razonable de imagen y capas innecesarias
+
+    - path: 'build.gradle.kts'
+      instructions: >
+        Revisá la configuración de Gradle:
+        - Dependencias con versiones fijadas
+        - No incluir dependencias innecesarias
+        - Configuración de plugins actualizada
+
+    - path: '.github/workflows/**'
+      instructions: >
+        Revisá con foco en:
+        - Correctitud del workflow
+        - Riesgos de seguridad (secrets expuestos, actions no pinneadas)
+        - Uso de cachés y versiones de actions
+        - No sugieras cambios cosméticos
+
+    - path: 'README.md'
+      instructions: >
+        Revisá solo exactitud técnica, pasos rotos y ambigüedades.
+        Evitá comentarios de estilo salvo que mejoren claramente la comprensión.
+
+  # Archivos/patrones a ignorar en el review
+  path_filters:
+    - '!**/gradle/wrapper/**'
+    - '!**/gradlew'
+    - '!**/gradlew.bat'
+    - '!**/.run/**'
+    - '!**/images/**'
+    - '!**/*.png'
+    - '!**/*.jpg'
+    - '!**/*.jpeg'
+    - '!**/*.gif'
+    - '!**/*.svg'
+    - '!**/build/**'
+    - '!**/*.jar'
+    - '!**/*.log'
+
+chat:
+  auto_reply: true
+
+# knowledge_base: desactivado por ahora para arrancar conservador.
+# Si los reviews mejorarían con contexto acumulado, descomentar:
+# knowledge_base:
+#   opt_out: false
+#   learnings:
+#     scope: "auto"
