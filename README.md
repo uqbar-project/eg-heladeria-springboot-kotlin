@@ -44,6 +44,8 @@ security:
 
 Para generar un secret-key podés ir a [esta página](https://www.browserling.com/tools/sha2-hash) y seleccionar un Output Hash Size de 512 bytes.
 
+> **Nota:** En producción, el secret-key debe configurarse mediante la variable de entorno `JWT_SECRET_KEY`. Nunca uses un secret-key hardcodeado en ambientes productivos.
+
 ## Módulo de Seguridad
 
 Esta aplicación utiliza Spring Security, de manera que cuando levanta la aplicación crea dos usuarios
@@ -300,4 +302,8 @@ El endpoint termina delegando en las clases UsuarioServic
 - **Revocación**: Permite invalidar tokens específicos (logout) o todos los tokens de un usuario (cambio de contraseña)
 - **Rotación**: Cada vez que se usa un refresh token, se genera uno nuevo y se invalida el anterior (mejora seguridad)
 - **Control**: Evita reutilización de tokens comprometidos y permite auditoría de sesiones activas
+
+### Limitaciones conocidas
+
+La rotación de tokens tiene una race condition teórica: si dos requests de `/refresh` llegan simultáneamente con el mismo token, ambos podrían leerlo como válido antes de que se persista la revocación. En producción, esto se resolvería con locking pesimista (`@Lock(PESSIMISTIC_WRITE)`) o un UPDATE condicional. Para mantener el ejemplo simple y enfocado en JWT, no se implementó esta solución.
 
