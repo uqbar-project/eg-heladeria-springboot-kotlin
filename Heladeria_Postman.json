@@ -7,7 +7,6 @@
   "item": [
     {
       "name": "Actualizar una heladería",
-      "event": [],
       "request": {
         "method": "PUT",
         "header": [
@@ -48,7 +47,6 @@
     },
     {
       "name": "Crear persona dueña de una heladería",
-      "event": [],
       "request": {
         "method": "POST",
         "header": [
@@ -93,107 +91,7 @@
       }
     },
     {
-      "name": "Ver heladerias",
-      "event": [],
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{access_token}}",
-            "disabled": false,
-            "type": "default"
-          }
-        ],
-        "auth": {
-          "type": "noauth"
-        },
-        "description": "",
-        "url": {
-          "raw": "{{baseUrl}}/heladerias/buscar",
-          "protocol": "",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "heladerias",
-            "buscar"
-          ],
-          "query": [],
-          "variable": []
-        }
-      }
-    },
-    {
-      "name": "Ver personas dueñas de heladería",
-      "event": [],
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{access_token}}",
-            "disabled": false,
-            "type": "default"
-          }
-        ],
-        "auth": {
-          "type": "noauth"
-        },
-        "description": "",
-        "url": {
-          "raw": "{{baseUrl}}/duenios",
-          "protocol": "",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "duenios"
-          ],
-          "query": [],
-          "variable": []
-        }
-      }
-    },
-    {
-      "name": "Ver una heladería",
-      "event": [],
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{access_token}}",
-            "disabled": false,
-            "type": "default"
-          }
-        ],
-        "auth": {
-          "type": "noauth"
-        },
-        "description": "",
-        "url": {
-          "raw": "{{baseUrl}}/heladerias/1",
-          "protocol": "",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "heladerias",
-            "1"
-          ],
-          "query": [],
-          "variable": []
-        }
-      }
-    },
-    {
-      "name": "bruno",
-      "event": []
-    },
-    {
       "name": "Login Admin",
-      "event": [],
       "request": {
         "method": "POST",
         "header": [],
@@ -226,7 +124,6 @@
     },
     {
       "name": "Login Usr común",
-      "event": [],
       "request": {
         "method": "POST",
         "header": [],
@@ -256,12 +153,136 @@
           }
         }
       }
+    },
+    {
+      "name": "Ver heladerias",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "disabled": false,
+            "type": "default"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{baseUrl}}/heladerias/buscar",
+          "protocol": "",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "heladerias",
+            "buscar"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Ver personas dueñas de heladería",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "disabled": false,
+            "type": "default"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{baseUrl}}/duenios",
+          "protocol": "",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "duenios"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Ver una heladería",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}",
+            "disabled": false,
+            "type": "default"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{baseUrl}}/heladerias/1",
+          "protocol": "",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "heladerias",
+            "1"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Refresh token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "noauth"
+        },
+        "description": "",
+        "url": {
+          "raw": "{{baseUrl}}/refresh",
+          "protocol": "",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "refresh"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refreshToken\": \"Qb4avdTmptm1hpUCVOdkZ6R2acYWCnFPnFyFQ7fqZXs\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
     }
   ],
   "variable": [
     {
       "key": "baseUrl",
-      "value": "",
+      "value": "http://localhost:8080",
       "type": "default"
     },
     {
