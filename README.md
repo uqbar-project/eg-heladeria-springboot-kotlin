@@ -294,7 +294,7 @@ Cuando el token normal expira, el usuario tiene un endpoint específico para ren
 
 El endpoint termina delegando en las clases UsuarioService
 
-- **TokenService**: de alto nivel, orquesta la rotación de tokens, habla con el repository y conoce al RefeshToken que se debe persistir en la base (ver más abajo)
+- **UsuarioService**: de alto nivel, orquesta la rotación de tokens, habla con el repository y conoce al RefreshToken que se debe persistir en la base (ver más abajo)
 - **TokenUtils**: solo crea y valida JWTs, hace operaciones criptográficas puras.
 
 ### Por qué guardar refresh tokens en la base de datos
