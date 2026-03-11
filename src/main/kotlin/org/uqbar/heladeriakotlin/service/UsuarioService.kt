@@ -28,7 +28,7 @@ class UsuarioService : UserDetailsService {
    @Autowired
    lateinit var refreshTokenRepository: RepoRefreshToken
 
-   @Transactional(readOnly = true)
+   @Transactional
    fun login(credencialesDTO: CredencialesDTO): TokenResponseDTO {
       val usuario = validarUsuario(credencialesDTO.usuario)
       usuario.validarCredenciales(credencialesDTO.password)
