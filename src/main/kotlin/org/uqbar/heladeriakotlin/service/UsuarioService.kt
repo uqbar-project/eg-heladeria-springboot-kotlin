@@ -1,6 +1,6 @@
 package org.uqbar.heladeriakotlin.service
 
-import jakarta.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -28,14 +28,15 @@ class UsuarioService : UserDetailsService {
    @Autowired
    lateinit var refreshTokenRepository: RepoRefreshToken
 
-   @Transactional(Transactional.TxType.NEVER)
+   @Transactional(readOnly = true)
    fun login(credencialesDTO: CredencialesDTO): TokenResponseDTO {
       val usuario = validarUsuario(credencialesDTO.usuario)
       usuario.validarCredenciales(credencialesDTO.password)
-      return generateTokenPair(credencialesDTO.usuario, usuario.roles.map { it.name })
+      return issueToken(credencialesDTO.usuario, usuario.roles.map { it.name })
    }
 
-   fun generateTokenPair(username: String, roles: List<String>): TokenResponseDTO {
+   @Transactional
+   fun issueToken(username: String, roles: List<String>): TokenResponseDTO {
       val accessToken = tokenUtils.createToken(username, roles)
          ?: throw CredencialesInvalidasException("Error generando access token")
       val refreshToken = createRefreshToken(username)
@@ -57,7 +58,7 @@ class UsuarioService : UserDetailsService {
 
       // Generamos el nuevo refresh token
       val usuario = validarUsuario(refreshToken.username)
-      return generateTokenPair(refreshToken.username, usuario.roles.map { it.name })
+      return issueToken(refreshToken.username, usuario.roles.map { it.name })
    }
 
    private fun createRefreshToken(username: String): String {
