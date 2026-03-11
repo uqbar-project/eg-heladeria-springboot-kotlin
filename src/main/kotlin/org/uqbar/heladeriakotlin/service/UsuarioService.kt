@@ -43,7 +43,8 @@ class UsuarioService : UserDetailsService {
    }
 
    fun refreshAccessToken(refreshTokenString: String): TokenResponseDTO {
-      val refreshToken = refreshTokenRepository.findByToken(refreshTokenString)
+      val tokenHash = tokenUtils.hashToken(refreshTokenString)
+      val refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
          .orElseThrow { CredencialesInvalidasException("Refresh token no encontrado") }
 
       if (!refreshToken.isValid()) {
@@ -64,7 +65,7 @@ class UsuarioService : UserDetailsService {
       val expirationDays = tokenUtils.getRefreshTokenExpirationDays()
 
       val refreshToken = RefreshToken().apply {
-         token = tokenString
+         tokenHash = tokenUtils.hashToken(tokenString)
          this.username = username
          expirationDate = LocalDateTime.now().plusDays(expirationDays.toLong())
       }

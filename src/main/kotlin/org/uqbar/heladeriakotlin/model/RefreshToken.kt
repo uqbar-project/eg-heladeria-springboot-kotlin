@@ -11,7 +11,7 @@ class RefreshToken {
     var id: Long? = null
 
     @Column(unique = true, nullable = false)
-    var token: String = ""
+    var tokenHash: String = ""
 
     @Column(nullable = false)
     var username: String = ""

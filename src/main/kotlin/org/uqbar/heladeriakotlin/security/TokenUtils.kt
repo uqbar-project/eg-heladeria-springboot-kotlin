@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component
 import org.uqbar.heladeriakotlin.errorHandling.CredencialesInvalidasException
 import org.uqbar.heladeriakotlin.errorHandling.TokenExpiradoException
 import java.security.SecureRandom
+import java.security.MessageDigest
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
@@ -50,6 +51,12 @@ class TokenUtils {
    }
 
    fun getRefreshTokenExpirationDays(): Int = refreshTokenDays
+
+   fun hashToken(token: String): String {
+      val digest = MessageDigest.getInstance("SHA-256")
+      val hash = digest.digest((token + secretKey).toByteArray())
+      return Base64.getEncoder().encodeToString(hash)
+   }
 
    fun getAuthentication(token: String): UsernamePasswordAuthenticationToken {
       try {

@@ -290,12 +290,14 @@ Repasando la configuración que definimos anteriormente:
 
 Cuando el token normal expira, el usuario tiene un endpoint específico para renovarlo. Para eso le tiene que pasar un refresh token:
 
-- `POST /refresh?refreshToken=<token>`
+- `POST /refresh` pasando en el body `{ refreshToken: <token> }`
 
 El endpoint termina delegando en las clases UsuarioService
 
 - **UsuarioService**: de alto nivel, orquesta la rotación de tokens, habla con el repository y conoce al RefreshToken que se debe persistir en la base (ver más abajo)
 - **TokenUtils**: solo crea y valida JWTs, hace operaciones criptográficas puras.
+
+Un detalle extra es que guardamos el hash del refresh token en la base, al que luego hay que desencriptar para pasarlo como respuesta al endpoint. Esto asegura que si se filtra el acceso a la base al menos va a necesitar conocer la secret key (no es 100% seguro pero es un paso extra que debe hacer)
 
 ### Por qué guardar refresh tokens en la base de datos
 
