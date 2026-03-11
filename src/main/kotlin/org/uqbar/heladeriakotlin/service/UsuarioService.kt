@@ -47,7 +47,7 @@ class UsuarioService : UserDetailsService {
          .orElseThrow { CredencialesInvalidasException("Refresh token no encontrado") }
 
       if (!refreshToken.isValid()) {
-         throw CredencialesInvalidasException()
+         throw CredencialesInvalidasException("Refresh token expirado o revocado")
       }
 
       // Revocamos el refresh token viejo por seguridad
