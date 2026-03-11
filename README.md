@@ -292,7 +292,7 @@ Cuando el token normal expira, el usuario tiene un endpoint específico para ren
 
 - `POST /refresh?refreshToken=<token>`
 
-El endpoint termina delegando en las clases UsuarioServic
+El endpoint termina delegando en las clases UsuarioService
 
 - **TokenService**: de alto nivel, orquesta la rotación de tokens, habla con el repository y conoce al RefeshToken que se debe persistir en la base (ver más abajo)
 - **TokenUtils**: solo crea y valida JWTs, hace operaciones criptográficas puras.
