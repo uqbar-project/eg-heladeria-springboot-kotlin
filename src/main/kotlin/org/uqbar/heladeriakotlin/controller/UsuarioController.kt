@@ -3,6 +3,7 @@ package org.uqbar.heladeriakotlin.controller
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.uqbar.heladeriakotlin.dto.CredencialesDTO
+import org.uqbar.heladeriakotlin.dto.RefreshTokenRequestDTO
 import org.uqbar.heladeriakotlin.dto.TokenResponseDTO
 import org.uqbar.heladeriakotlin.service.UsuarioService
 
@@ -18,7 +19,7 @@ class UsuarioController {
     }
 
     @PostMapping("/refresh")
-    fun refresh(@RequestParam refreshToken: String): TokenResponseDTO {
-        return usuarioService.refreshAccessToken(refreshToken)
+    fun refresh(@RequestBody body: RefreshTokenRequestDTO): TokenResponseDTO {
+        return usuarioService.refreshAccessToken(body.refreshToken)
     }
 }

@@ -1,6 +1,8 @@
 package org.uqbar.heladeriakotlin
 
 import jakarta.transaction.Transactional
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.not
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -8,26 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*
-import org.hamcrest.CoreMatchers.not
-import org.hamcrest.CoreMatchers.equalTo
 import org.uqbar.heladeriakotlin.dao.RepoUsuarios
 import org.uqbar.heladeriakotlin.model.Duenio
 import org.uqbar.heladeriakotlin.model.Heladeria
 import org.uqbar.heladeriakotlin.model.ROLES
 import org.uqbar.heladeriakotlin.model.TipoHeladeria
 import org.uqbar.heladeriakotlin.security.TokenUtils
+import org.uqbar.utils.TestUtils.bodyRefreshToken
 import org.uqbar.utils.TestUtils.bodyUsuarioExistente
 import org.uqbar.utils.TestUtils.bodyUsuarioInexistente
 import org.uqbar.utils.TestUtils.bodyUsuarioPasswordIncorrecta
 import org.uqbar.utils.TestUtils.crearUsuario
 import org.uqbar.utils.TestUtils.getHeladeriaBase
 import org.uqbar.utils.TestUtils.tokenUsuarioInvalido
-
 import org.uqbar.utils.toJSON
 
 @SpringBootTest
@@ -112,7 +112,8 @@ class HeladeriaApplicationTests {
         // Ahora usamos el refresh token
         mockMvc.perform(
             post("/refresh")
-                .param("refreshToken", refreshToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyRefreshToken(refreshToken))
                 .with(csrf())
         )
             .andExpect(status().isOk)
@@ -127,7 +128,8 @@ class HeladeriaApplicationTests {
     fun `refresh token invalido devuelve unauthorized`() {
         mockMvc.perform(
             post("/refresh")
-                .param("refreshToken", "token-invalido")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyRefreshToken("token-invalido"))
                 .with(csrf())
         )
             .andExpect(status().isUnauthorized)
@@ -161,7 +163,8 @@ class HeladeriaApplicationTests {
         // Primer refresh - debería funcionar
         mockMvc.perform(
             post("/refresh")
-                .param("refreshToken", refreshToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyRefreshToken(refreshToken))
                 .with(csrf())
         )
             .andExpect(status().isOk)
@@ -169,7 +172,8 @@ class HeladeriaApplicationTests {
         // Segundo refresh con el mismo token - debería fallar (token revocado)
         mockMvc.perform(
             post("/refresh")
-                .param("refreshToken", refreshToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bodyRefreshToken(refreshToken))
                 .with(csrf())
         )
             .andExpect(status().isUnauthorized)
