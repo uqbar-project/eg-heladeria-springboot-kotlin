@@ -104,7 +104,7 @@
           "res": [
             {
               "name": "access_token",
-              "value": "res.body",
+              "value": "res.body.accessToken",
               "enabled": true,
               "local": false
             }
@@ -143,7 +143,7 @@
           "res": [
             {
               "name": "access_token",
-              "value": "res.body",
+              "value": "res.body.accessToken",
               "enabled": true,
               "local": false
             }
@@ -323,6 +323,6 @@
     "size": 0.0016765594482421875,
     "filesCount": 8
   },
-  "exportedAt": "2026-03-11T02:35:34.610Z",
+  "exportedAt": "2026-03-11T02:48:04.644Z",
   "exportedUsing": "Bruno/3.0.2"
 }

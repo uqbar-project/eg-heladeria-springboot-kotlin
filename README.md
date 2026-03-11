@@ -297,7 +297,7 @@ El endpoint termina delegando en las clases UsuarioService
 - **UsuarioService**: de alto nivel, orquesta la rotación de tokens, habla con el repository y conoce al RefreshToken que se debe persistir en la base (ver más abajo)
 - **TokenUtils**: solo crea y valida JWTs, hace operaciones criptográficas puras.
 
-Un detalle extra es que guardamos el hash del refresh token en la base, al que luego hay que desencriptar para pasarlo como respuesta al endpoint. Esto asegura que si se filtra el acceso a la base al menos va a necesitar conocer la secret key (no es 100% seguro pero es un paso extra que debe hacer)
+Un detalle extra es que guardamos el hash del refresh token en la base. El token original (sin hashear) se envía al cliente en el login, y cuando el cliente lo presenta en `/refresh`, se vuelve a hashear para compararlo con el almacenado. Si coincide se devuelve el nuevo token.
 
 ### Por qué guardar refresh tokens en la base de datos
 
