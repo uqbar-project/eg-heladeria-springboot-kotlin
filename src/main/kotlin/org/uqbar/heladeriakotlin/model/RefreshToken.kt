@@ -17,7 +17,7 @@ class RefreshToken {
     var username: String = ""
 
     @Column(nullable = false)
-    var expirationDate: LocalDateTime = LocalDateTime.now()
+    var expirationDate: LocalDateTime = LocalDateTime.now().plusHours(1)
 
     var revoked: Boolean = false
 
