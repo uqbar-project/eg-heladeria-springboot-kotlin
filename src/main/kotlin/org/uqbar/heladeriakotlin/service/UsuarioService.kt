@@ -44,7 +44,7 @@ class UsuarioService : UserDetailsService {
 
    fun refreshAccessToken(refreshTokenString: String): TokenResponseDTO {
       val refreshToken = refreshTokenRepository.findByToken(refreshTokenString)
-         .orElseThrow { CredencialesInvalidasException() }
+         .orElseThrow { CredencialesInvalidasException("Refresh token no encontrado") }
 
       if (!refreshToken.isValid()) {
          throw CredencialesInvalidasException()
