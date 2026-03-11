@@ -44,6 +44,8 @@ security:
 
 Para generar un secret-key podés ir a [esta página](https://www.browserling.com/tools/sha2-hash) y seleccionar un Output Hash Size de 512 bytes.
 
+> **Nota:** En producción, el secret-key debe configurarse mediante la variable de entorno `JWT_SECRET_KEY`. Nunca uses un secret-key hardcodeado en ambientes productivos.
+
 ## Módulo de Seguridad
 
 Esta aplicación utiliza Spring Security, de manera que cuando levanta la aplicación crea dos usuarios
@@ -283,4 +285,27 @@ Repasando la configuración que definimos anteriormente:
 
 - el login no debe exigir token, por más que se trate de un POST
 - las implementaciones que nosotros dejamos en el ejemplo son las recomendadas para Spring Security 6, donde a partir de esta versión se genera un token nuevo con cada request (para evitar la posibilidad de que se robe y reutilice)
+
+## Refresh Token
+
+Cuando el token normal expira, el usuario tiene un endpoint específico para renovarlo. Para eso le tiene que pasar un refresh token:
+
+- `POST /refresh` pasando en el body `{ refreshToken: <token> }`
+
+El endpoint termina delegando en las clases UsuarioService
+
+- **UsuarioService**: de alto nivel, orquesta la rotación de tokens, habla con el repository y conoce al RefreshToken que se debe persistir en la base (ver más abajo)
+- **TokenUtils**: solo crea y valida JWTs, hace operaciones criptográficas puras.
+
+Un detalle extra es que guardamos el hash del refresh token en la base. El token original (sin hashear) se envía al cliente en el login, y cuando el cliente lo presenta en `/refresh`, se vuelve a hashear para compararlo con el almacenado. Si coincide se devuelve el nuevo token.
+
+### Por qué guardar refresh tokens en la base de datos
+
+- **Revocación**: Permite invalidar tokens específicos (logout) o todos los tokens de un usuario (cambio de contraseña)
+- **Rotación**: Cada vez que se usa un refresh token, se genera uno nuevo y se invalida el anterior (mejora seguridad)
+- **Control**: Evita reutilización de tokens comprometidos y permite auditoría de sesiones activas
+
+### Limitaciones conocidas
+
+La rotación de tokens tiene una race condition teórica: si dos requests de `/refresh` llegan simultáneamente con el mismo token, ambos podrían leerlo como válido antes de que se persista la revocación. En producción, esto se resolvería con locking pesimista (`@Lock(PESSIMISTIC_WRITE)`) o un UPDATE condicional. Para mantener el ejemplo simple y enfocado en JWT, no se implementó esta solución.
 

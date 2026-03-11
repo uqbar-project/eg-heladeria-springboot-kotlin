@@ -53,4 +53,9 @@ object TestUtils {
 
     fun tokenUsuarioInvalido(): String =
         "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsaXR1cmJlIiwiaWF0IjoxNjcwNTk0OTI5LCJleHAiOjE2NzE2NzQ5MjksInJvbGVzIjoiUk9MRV9VU0VSIn0.hSrd0sTw1OH57YlmV19xNCtide76AZa476XjPwE1uiW0wgbo7w5CarrJWCLjy0e62EZIbVjEGmIdHZ5tMHGkyg"
+
+    fun bodyRefreshToken(token: String): String {
+        val payloadRequest = mapOf("refreshToken" to token)
+        return mapper.writeValueAsString(payloadRequest)
+    }
 }

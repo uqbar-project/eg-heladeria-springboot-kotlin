@@ -40,7 +40,7 @@ class HeladeriaSecurityConfig {
         return httpSecurity
             .cors { it.disable() }
             .csrf {
-                it.ignoringRequestMatchers("/login")
+                it.ignoringRequestMatchers("/login", "/refresh")
                 it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
             }
@@ -49,6 +49,7 @@ class HeladeriaSecurityConfig {
                 // Importante: no definirlo solo para el method POST
                 // porque CORS requiere que también puedas mandar el OPTIONS para hacer el pre-flight
                 it.requestMatchers("/login").permitAll()
+                it.requestMatchers("/refresh").permitAll()
                 it.requestMatchers("/error").permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS).permitAll()
                 // Permisos de admin para modificar
