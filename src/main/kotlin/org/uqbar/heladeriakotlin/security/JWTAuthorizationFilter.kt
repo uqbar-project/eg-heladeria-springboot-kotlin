@@ -4,7 +4,6 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -38,7 +37,13 @@ class JWTAuthorizationFilter : OncePerRequestFilter() {
         } catch (e: TokenExpiradoException) {
             // Captura la excepción de token expirado y devuelve el status code adecuado (401-Unauthorized)
             logger.warn(e.message)
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
+            response.status = HttpServletResponse.SC_UNAUTHORIZED
+            response.setHeader("WWW-Authenticate", "Bearer error=\"invalid_token\", error_description=\"The access token expired\"")
+            response.contentType = "application/json"
+            response.writer.write("{\"error\":\"Token expired\",\"message\":\"${e.message}\"}")
+
+            // Importante: NO llamar a filterChain.doFilter() después de manejar el error
+            return
         }
     }
 }

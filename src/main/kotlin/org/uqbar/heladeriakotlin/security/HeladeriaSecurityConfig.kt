@@ -38,7 +38,7 @@ class HeladeriaSecurityConfig {
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
-            .cors { it.disable() }
+            .cors(Customizer.withDefaults())
             .csrf {
                 it.ignoringRequestMatchers("/login", "/refresh")
                 it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -85,6 +85,7 @@ class HeladeriaSecurityConfig {
                     .allowedHeaders("*")
                     .allowedMethods("POST", "GET", "PUT", "DELETE")
                     .allowCredentials(true)
+                    .exposedHeaders("WWW-Authenticate")
             }
         }
     }
